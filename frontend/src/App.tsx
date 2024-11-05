@@ -5,30 +5,32 @@ import LoginForm from './components/LoginForm';
 import Dashboard from './components/Dashboard';
 
 function App() {
+  // Initialize the state based on `localStorage`
   const [isAuthenticated, setIsAuthenticated] = useState(() => !!localStorage.getItem('token'));
-  const [user, setUser] = useState<{ id: number; name: string; email: string } | null>(null);
+  const [user, setUser] = useState<{ id: number; name: string; email: string; role: string } | null>(null);
 
+  // Load user and token from `localStorage` on mount
   useEffect(() => {
-    // Check if the user and token are in localStorage on mount
     const storedUser = localStorage.getItem('user');
     const token = localStorage.getItem('token');
 
     if (token && storedUser) {
+      // Parse and set the user from localStorage
       setUser(JSON.parse(storedUser));
       setIsAuthenticated(true);
     }
   }, []);
 
-  const handleLogin = (loggedInUser: { id: number; name: string; email: string }) => {
+  const handleLogin = (loggedInUser: { id: number; name: string; email: string; role: string }) => {
     setIsAuthenticated(true);
-    setUser(loggedInUser);
+    setUser(loggedInUser); // Update the state with the logged-in user's data
   };
 
   const handleLogout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
     setIsAuthenticated(false);
-    setUser(null);
+    setUser(null); // Clear the user data on logout
   };
 
   return (

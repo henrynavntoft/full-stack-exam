@@ -1,3 +1,4 @@
+// src/api/usersApi.ts
 import axios from 'axios';
 import { User } from '../types';
 
@@ -28,6 +29,21 @@ axiosInstance.interceptors.request.use(
   },
   (error) => Promise.reject(error)
 );
+
+// Add a response interceptor to handle unauthorized errors globally
+axiosInstance.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response && error.response.status === 403) {
+      alert("You don't have permission to access this resource.");
+      // Optionally, redirect to the login page or another page
+      // window.location.href = '/login';
+    }
+    return Promise.reject(error);
+  }
+);
+
+// API functions
 
 // Fetch all users
 export const fetchUsers = async (): Promise<User[]> => {

@@ -36,7 +36,7 @@ router.get('/:id', authenticateToken, requireAdmin, async (req: AuthenticatedReq
 });
 
 // POST to create a new user with password hashing (Admin only)
-router.post('/', authenticateToken, requireAdmin, async (req: AuthenticatedRequest, res: Response) => {
+router.post('/', async (req: AuthenticatedRequest, res: Response) => {
   const { name, email, password, confirmPassword } = req.body;
 
   if (!name || !email || !password || !confirmPassword) {

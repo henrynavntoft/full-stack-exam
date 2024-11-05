@@ -4,7 +4,7 @@ import { loginUser } from '../api/authApi';
 import { useNavigate } from 'react-router-dom';
 
 interface LoginFormProps {
-  onLogin: (user: { id: number; name: string; email: string }) => void;
+  onLogin: (user: {  id: number; name: string; email: string; role:string }) => void;
 }
 
 function LoginForm({ onLogin }: LoginFormProps) {
