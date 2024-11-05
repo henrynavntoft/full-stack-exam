@@ -1,11 +1,10 @@
-// src/components/LoginForm.tsx
 import React, { useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { loginUser } from '../api/authApi';
 import { useNavigate } from 'react-router-dom';
 
 interface LoginFormProps {
-  onLogin: () => void;
+  onLogin: (user: { id: number; name: string; email: string }) => void;
 }
 
 function LoginForm({ onLogin }: LoginFormProps) {
@@ -16,10 +15,11 @@ function LoginForm({ onLogin }: LoginFormProps) {
 
   const mutation = useMutation({
     mutationFn: loginUser,
-    onSuccess: (token) => {
-      localStorage.setItem('token', token);
-      onLogin(); // Call the onLogin callback to update App state
-      navigate('/dashboard'); // Redirect to the dashboard page after login
+    onSuccess: (data) => {
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('user', JSON.stringify(data.user)); 
+      onLogin(data.user); // Pass user data to the onLogin callback
+      navigate('/dashboard');
     },
     onError: () => {
       setError('Invalid email or password');
@@ -37,19 +37,19 @@ function LoginForm({ onLogin }: LoginFormProps) {
       <h2 className="text-xl font-bold mb-4">Login</h2>
       {error && <div className="text-red-500 mb-3">{error}</div>}
       <form onSubmit={handleSubmit}>
+        <label className="block text-sm font-medium text-gray-700">Email</label>
         <input
           type="email"
           name="email"
-          placeholder="Email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           className="w-full p-2 mb-3 border rounded"
           required
         />
+        <label className="block text-sm font-medium text-gray-700">Password</label>
         <input
           type="password"
           name="password"
-          placeholder="Password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           className="w-full p-2 mb-3 border rounded"

@@ -5,7 +5,16 @@ interface LoginCredentials {
   password: string;
 }
 
-export const loginUser = async (credentials: LoginCredentials): Promise<string> => {
+interface LoginResponse {
+  token: string;
+  user: {
+    id: number;
+    name: string;
+    email: string;
+  };
+}
+
+export const loginUser = async (credentials: LoginCredentials): Promise<LoginResponse> => {
   const response = await axios.post('http://localhost:3000/api/auth/login', credentials);
-  return response.data.token; // Assuming the backend response contains `{ token: '...' }`
+  return response.data; // Response contains { token, user }
 };
