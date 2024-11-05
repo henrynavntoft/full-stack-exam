@@ -1,7 +1,12 @@
 import express, {Request, Response, Express, NextFunction} from 'express';
 import helmet from 'helmet';
 import cors from 'cors';
+
+// Import Routes
 import userRoutes from './routes/users';
+// import adminRouter from './routes/admin';
+import authRoutes from './routes/auth';
+
 
 const app: Express = express();
 
@@ -15,10 +20,14 @@ app.get('/', (req: Request, res: Response) => {
     res.send("Express + TypeScript Server");
 }   );
 
-// Product data routes 
+// Users 
 app.use('/api/users', userRoutes);
 
+// Admin
+// app.use('/api/admin', adminRouter);
 
+// Auth
+app.use('/api/auth', authRoutes);
 
 // Global error handler
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
