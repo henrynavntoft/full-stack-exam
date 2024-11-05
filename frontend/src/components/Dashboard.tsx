@@ -33,7 +33,7 @@ function Dashboard({ onLogout, user }: DashboardProps) {
       {/* Only render UserList if the user has an ADMIN role */}
       {user?.role === 'ADMIN' && (
         <section className="p-4">
-          <UserList />
+          <UserList isAdmin={user.role === 'ADMIN'} loggedInUserId={user.id} />
         </section>
       )}
     </>
