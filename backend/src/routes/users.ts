@@ -1,13 +1,14 @@
-// src/routes/users.ts
 import { Router, Request, Response } from 'express';
 import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcryptjs';
+import { authenticateToken, AuthenticatedRequest } from '../middleware/authMiddleware';
+import { requireAdmin } from '../middleware/adminMiddleware';
 
 const prisma = new PrismaClient();
 const router = Router();
 
-// GET all users
-router.get('/', async (req: Request, res: Response) => {
+// GET all users (Admin only)
+router.get('/', authenticateToken, requireAdmin, async (req: AuthenticatedRequest, res: Response) => {
   try {
     const users = await prisma.user.findMany();
     res.json(users);
@@ -17,8 +18,8 @@ router.get('/', async (req: Request, res: Response) => {
   }
 });
 
-// GET a specific user by ID
-router.get('/:id', async (req: Request, res: Response) => {
+// GET a specific user by ID (Admin only)
+router.get('/:id', authenticateToken, requireAdmin, async (req: AuthenticatedRequest, res: Response) => {
   const { id } = req.params;
   try {
     const user = await prisma.user.findUnique({
@@ -34,8 +35,8 @@ router.get('/:id', async (req: Request, res: Response) => {
   }
 });
 
-// POST to create a new user with password hashing
-router.post('/', async (req: Request, res: Response) => {
+// POST to create a new user with password hashing (Admin only)
+router.post('/', authenticateToken, requireAdmin, async (req: AuthenticatedRequest, res: Response) => {
   const { name, email, password, confirmPassword } = req.body;
 
   if (!name || !email || !password || !confirmPassword) {
@@ -59,8 +60,8 @@ router.post('/', async (req: Request, res: Response) => {
   }
 });
 
-// PUT to update an existing user
-router.put('/:id', async (req: Request, res: Response) => {
+// PUT to update an existing user (Admin only)
+router.put('/:id', authenticateToken, requireAdmin, async (req: AuthenticatedRequest, res: Response) => {
   const { id } = req.params;
   const { name, email, password } = req.body;
 
@@ -85,8 +86,8 @@ router.put('/:id', async (req: Request, res: Response) => {
   }
 });
 
-// DELETE a user by ID
-router.delete('/:id', async (req: Request, res: Response) => {
+// DELETE a user by ID (Admin only)
+router.delete('/:id', authenticateToken, requireAdmin, async (req: AuthenticatedRequest, res: Response) => {
   const { id } = req.params;
   try {
     await prisma.user.delete({

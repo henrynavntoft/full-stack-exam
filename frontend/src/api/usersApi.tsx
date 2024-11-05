@@ -17,6 +17,18 @@ const axiosInstance = axios.create({
   },
 });
 
+// Add a request interceptor to include the token in all requests
+axiosInstance.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
+
 // Fetch all users
 export const fetchUsers = async (): Promise<User[]> => {
   const response = await axiosInstance.get<User[]>('/users');
