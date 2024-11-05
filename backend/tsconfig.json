@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "moduleResolution": "node",
+    "module": "commonjs",
+    "target": "es2020",
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "outDir": "./dist",
+    "rootDir": "./src", // Relative path within the `backend` folder
+    "strict": true,
+    "typeRoots": ["./node_modules/@types"],
+    "skipLibCheck": true
+  },
+  "include": ["src/**/*"], // Adjust path relative to `tsconfig.json`
+  "exclude": ["dist"]
+}

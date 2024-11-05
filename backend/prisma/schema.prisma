@@ -1,0 +1,68 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "linux-arm64-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String   @unique
+  password  String
+  role      UserRole @default(USER) // User roles, either ADMIN or USER
+  createdAt DateTime @default(now())
+
+  // Relationship: a user can have multiple favorite artworks
+  favoriteArtworks Artwork[] @relation("UserFavorites")
+
+  // Optional: Track created artworks by the user (if relevant)
+  createdArtworks Artwork[] @relation("CreatedArtworks")
+}
+
+// Enum for user roles
+enum UserRole {
+  ADMIN
+  USER
+}
+
+// Artwork model with relationship to Artist and favorited users
+model Artwork {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String?
+  createdAt   DateTime @default(now())
+  imageUrl    String?
+
+  // Foreign key to Artist
+  artist   Artist @relation(fields: [artistId], references: [id])
+  artistId Int
+
+  // Relation to track users who have favorited this artwork
+  favoritedBy User[] @relation("UserFavorites")
+
+  // Optional: Track the user who created the artwork (if applicable)
+  createdBy   User? @relation("CreatedArtworks", fields: [createdById], references: [id])
+  createdById Int?
+}
+
+// Artist model with relationship to artworks
+model Artist {
+  id          Int       @id @default(autoincrement())
+  name        String
+  bio         String?
+  birthDate   DateTime?
+  nationality String?
+
+  // Relationship: an artist can have multiple artworks
+  artworks Artwork[]
+}

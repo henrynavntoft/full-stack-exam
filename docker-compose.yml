@@ -1,0 +1,55 @@
+services:
+  backend:
+    container_name: backend
+    image: backend
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+      - "5555:5555"
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/postgres?schema=public
+    depends_on:
+      - db
+    volumes:
+      - ./backend:/app  
+    command: npm run dev
+    networks:
+      - backend_network
+  
+  db:
+    container_name: db
+    image: postgres:12
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - backend_network
+
+  frontend:
+    container_name: frontend
+    image: node:20 
+    working_dir: /app
+    volumes:
+      - ./frontend:/app 
+      - /app/node_modules 
+    ports:
+      - "5173:5173" # Expose Vite's default port
+    command: sh -c "npm install && npm run dev"
+    depends_on:
+      - backend
+    networks:
+      - backend_network
+
+volumes:
+  pgdata: {}
+
+networks:
+  backend_network:
