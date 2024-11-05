@@ -19,15 +19,12 @@ function CreateUserForm() {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
 
-  // Initialize the query client
   const queryClient = useQueryClient();
 
-  // Set up mutation for creating a user
   const mutation = useMutation({
     mutationFn: createUser,
     onSuccess: () => {
-      // Invalidate and refetch the users query to reflect the new user
-      queryClient.invalidateQueries({ queryKey: ['users'] });        
+      queryClient.invalidateQueries({ queryKey: ['users'] });
       setSuccess("User created successfully!");
       setFormData({ name: '', email: '', password: '', confirmPassword: '' });
     },
@@ -36,79 +33,95 @@ function CreateUserForm() {
     },
   });
 
-  // Handle form input changes
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  // Handle form submission
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
     setSuccess(null);
 
-    // Validate passwords match
     if (formData.password !== formData.confirmPassword) {
       setError("Passwords do not match");
       return;
     }
 
-    // Submit the mutation with the form data
     const { name, email, password, confirmPassword } = formData;
     mutation.mutate({ name, email, password, confirmPassword });
   };
 
   return (
-    <div className="p-4 max-w-md mx-auto bg-white shadow-md rounded">
-      <h2 className="text-xl font-bold mb-4">Create New User</h2>
-      {error && <div className="text-red-500 mb-3">{error}</div>}
-      {success && <div className="text-green-500 mb-3">{success}</div>}
-      <form onSubmit={handleSubmit}>
-        <input
-          type="text"
-          name="name"
-          placeholder="Name"
-          value={formData.name}
-          onChange={handleChange}
-          className="w-full p-2 mb-3 border rounded"
-          required
-        />
-        <input
-          type="email"
-          name="email"
-          placeholder="Email"
-          value={formData.email}
-          onChange={handleChange}
-          className="w-full p-2 mb-3 border rounded"
-          required
-        />
-        <input
-          type="password"
-          name="password"
-          placeholder="Password"
-          value={formData.password}
-          onChange={handleChange}
-          className="w-full p-2 mb-3 border rounded"
-          required
-        />
-        <input
-          type="password"
-          name="confirmPassword"
-          placeholder="Confirm Password"
-          value={formData.confirmPassword}
-          onChange={handleChange}
-          className="w-full p-2 mb-4 border rounded"
-          required
-        />
-        <button
-          type="submit"
-          className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
-          disabled={mutation.isPending}
-        >
-          {mutation.isPending ? 'Creating...' : 'Create User'}
-        </button>
-      </form>
+    <div className="flex items-center justify-center min-h-screen bg-background">
+      <div className="w-full max-w-md p-6 bg-card shadow-md rounded-lg">
+        <h2 className="text-2xl font-bold text-primary mb-6 text-center">Create New User</h2>
+        
+        {error && <div className="text-destructive mb-4 text-center">{error}</div>}
+        {success && <div className="text-green-500 mb-4 text-center">{success}</div>}
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-foreground mb-1">Name</label>
+            <input
+              type="text"
+              name="name"
+              placeholder="Name"
+              value={formData.name}
+              onChange={handleChange}
+              className="w-full p-2 border border-border rounded bg-input text-foreground"
+              required
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-foreground mb-1">Email</label>
+            <input
+              type="email"
+              name="email"
+              placeholder="Email"
+              value={formData.email}
+              onChange={handleChange}
+              className="w-full p-2 border border-border rounded bg-input text-foreground"
+              required
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-foreground mb-1">Password</label>
+            <input
+              type="password"
+              name="password"
+              placeholder="Password"
+              value={formData.password}
+              onChange={handleChange}
+              className="w-full p-2 border border-border rounded bg-input text-foreground"
+              required
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-foreground mb-1">Confirm Password</label>
+            <input
+              type="password"
+              name="confirmPassword"
+              placeholder="Confirm Password"
+              value={formData.confirmPassword}
+              onChange={handleChange}
+              className="w-full p-2 border border-border rounded bg-input text-foreground"
+              required
+            />
+          </div>
+
+          <button
+            type="submit"
+            className="w-full bg-primary text-primary-foreground py-2 rounded hover:bg-primary-dark transition disabled:opacity-50"
+            disabled={mutation.isPending}
+          >
+            {mutation.isPending ? 'Creating...' : 'Create User'}
+          </button>
+        </form>
+      </div>
     </div>
   );
 }

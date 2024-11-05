@@ -15,28 +15,30 @@ function Dashboard({ onLogout, user }: DashboardProps) {
   };
 
   return (
-    <>
-      <section className="p-4">
-        {/* Display user role in the dashboard title */}
-        <h1 className="text-2xl font-bold mb-4">
-          {user?.role === 'ADMIN' ? 'Admin' : 'User'} Dashboard
-        </h1>
-        <p>Welcome, {user?.name}!</p>
-        <button
-          onClick={handleLogout}
-          className="mt-4 bg-red-500 text-white p-2 rounded hover:bg-red-600"
-        >
-          Logout
-        </button>
-      </section>
-      
-      {/* Only render UserList if the user has an ADMIN role */}
-      {user?.role === 'ADMIN' && (
-        <section className="p-4">
-          <UserList isAdmin={user.role === 'ADMIN'} loggedInUserId={user.id} />
+    <div className="flex items-center justify-center min-h-screen bg-background">
+      <div className="p-6 max-w-4xl w-full bg-card shadow-md rounded-lg">
+        <section className="p-4 mb-6 border-b border-border">
+          {/* Display user role in the dashboard title */}
+          <h1 className="text-3xl font-bold text-primary mb-2">
+            {user?.role === 'ADMIN' ? 'Admin' : 'User'} Dashboard
+          </h1>
+          <p className="text-muted-foreground">Welcome, {user?.name}!</p>
+          <button
+            onClick={handleLogout}
+            className="mt-4 bg-destructive text-destructive-foreground px-4 py-2 rounded hover:bg-destructive-dark transition"
+          >
+            Logout
+          </button>
         </section>
-      )}
-    </>
+
+        {/* Only render UserList if the user has an ADMIN role */}
+        {user?.role === 'ADMIN' && (
+          <section className="p-4">
+            <UserList isAdmin={user.role === 'ADMIN'} loggedInUserId={user.id} />
+          </section>
+        )}
+      </div>
+    </div>
   );
 }
 

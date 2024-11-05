@@ -29,11 +29,11 @@ function UserList({ isAdmin, loggedInUserId }: UserListProps) {
     deleteMutation.mutate(userId);
   };
 
-  if (isLoading) return <div>Loading...</div>;
-  if (isError) return <div>Error: {(error as Error).message}</div>;
+  if (isLoading) return <div className="text-center text-muted-foreground">Loading users...</div>;
+  if (isError) return <div className="text-center text-destructive">Error: {(error as Error).message}</div>;
 
   return (
-    <ul className="space-y-2">
+    <ul className="space-y-4">
       {users?.map((user) => (
         <UserCard
           key={user.id}
