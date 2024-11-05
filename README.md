@@ -1,4 +1,6 @@
-# To start project: docker compose up --build
+# To start project: 
+1. Create .env file with DATABASE_URL in backend folder 
+2. docker compose up --build
 
 # Art Lookup Platform
 
