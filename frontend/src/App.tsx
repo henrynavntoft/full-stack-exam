@@ -39,6 +39,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<LoginForm onLogin={handleLogin} />} />
+        <Route path="/signup" element={<CreateUserForm />} />
         <Route
           path="/dashboard"
           element={
@@ -56,7 +57,7 @@ function App() {
 
 const Home = () => (
  <>
-    <CreateUserForm />
+    <h1>Home page</h1>
 </>
 );
 

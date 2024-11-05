@@ -35,7 +35,7 @@ function Header({ isAuthenticated, onLogout }: HeaderProps) {
             <Link to="/login" className="mr-4 bg-primary text-primary-foreground px-4 py-2 rounded hover:bg-primary-dark">
               Login
             </Link>
-            <Link to="/" className="bg-secondary text-secondary-foreground px-4 py-2 rounded hover:bg-secondary-dark">
+            <Link to="/signup" className="bg-secondary text-secondary-foreground px-4 py-2 rounded hover:bg-secondary-dark">
               Signup
             </Link>
           </>
