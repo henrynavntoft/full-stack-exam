@@ -1,12 +1,7 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider      = "prisma-client-js"
   binaryTargets = ["native", "linux-arm64-openssl-3.0.x"]
+  seed          = "seed.ts"
 }
 
 datasource db {
@@ -19,23 +14,17 @@ model User {
   name      String
   email     String   @unique
   password  String
-  role      UserRole @default(USER) // User roles, either ADMIN or USER
+  role      UserRole @default(USER)
   createdAt DateTime @default(now())
 
-  // Relationship: a user can have multiple favorite artworks
   favoriteArtworks Artwork[] @relation("UserFavorites")
-
-  // Optional: Track created artworks by the user (if relevant)
-  createdArtworks Artwork[] @relation("CreatedArtworks")
 }
 
-// Enum for user roles
 enum UserRole {
   ADMIN
   USER
 }
 
-// Artwork model with relationship to Artist and favorited users
 model Artwork {
   id          Int      @id @default(autoincrement())
   title       String
@@ -43,26 +32,48 @@ model Artwork {
   createdAt   DateTime @default(now())
   imageUrl    String?
 
-  // Foreign key to Artist
-  artist   Artist @relation(fields: [artistId], references: [id])
-  artistId Int
+  // Relations
+  artistProductions Production[]
+  favoriteBy        User[]       @relation("UserFavorites")
 
-  // Relation to track users who have favorited this artwork
-  favoritedBy User[] @relation("UserFavorites")
-
-  // Optional: Track the user who created the artwork (if applicable)
-  createdBy   User? @relation("CreatedArtworks", fields: [createdById], references: [id])
-  createdById Int?
+  colors ArtworkColor[]
+  period ProductionPeriod?
 }
 
-// Artist model with relationship to artworks
 model Artist {
   id          Int       @id @default(autoincrement())
-  name        String
+  name        String    @unique
   bio         String?
   birthDate   DateTime?
+  deathDate   DateTime?
   nationality String?
+  gender      String?
 
-  // Relationship: an artist can have multiple artworks
-  artworks Artwork[]
+  productions Production[]
+}
+
+model Production {
+  id          Int     @id @default(autoincrement())
+  artwork     Artwork @relation(fields: [artworkId], references: [id])
+  artworkId   Int
+  artist      Artist  @relation(fields: [artistId], references: [id])
+  artistId    Int
+  creatorRole String? // Role in the creation (e.g., "Efter")
+}
+
+model ProductionPeriod {
+  id         Int      @id @default(autoincrement())
+  startDate  DateTime
+  endDate    DateTime
+  periodName String?
+
+  artwork   Artwork? @relation(fields: [artworkId], references: [id])
+  artworkId Int?     @unique
+}
+
+model ArtworkColor {
+  id        Int     @id @default(autoincrement())
+  color     String // Hex color code
+  artwork   Artwork @relation(fields: [artworkId], references: [id])
+  artworkId Int
 }
