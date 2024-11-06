@@ -24,8 +24,6 @@ interface ArtworkItem {
 }
 
 async function main() {
-  // Clear data from all tables (cascading deletes if foreign keys are used)
-  await prisma.$executeRaw`TRUNCATE TABLE "Production", "ArtworkColor", "Artwork", "Artist", "User" RESTART IDENTITY CASCADE`;
 
   // 1. Create an Admin User with a hashed password
   const hashedPassword = await bcrypt.hash('securepassword', 10);

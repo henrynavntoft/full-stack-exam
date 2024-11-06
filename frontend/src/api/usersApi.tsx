@@ -12,25 +12,25 @@ interface CreateUserPayload {
 // API functions
 
 export const fetchUsers = async (): Promise<User[]> => {
-  const response = await axiosInstance.get<User[]>('/users');
+  const response = await axiosInstance.get<User[]>('/api/users');
   return response.data;
 };
 
 export const fetchUser = async (id: number): Promise<User> => {
-  const response = await axiosInstance.get<User>(`/users/${id}`);
+  const response = await axiosInstance.get<User>(`/api/users/${id}`);
   return response.data;
 };
 
 export const createUser = async (user: CreateUserPayload): Promise<User> => {
-  const response = await axiosInstance.post<User>('/users', user);
+  const response = await axiosInstance.post<User>('/api/users', user);
   return response.data;
 };
 
 export const updateUser = async (user: Partial<User> & { id: number }): Promise<User> => {
-  const response = await axiosInstance.put<User>(`/users/${user.id}`, user);
+  const response = await axiosInstance.put<User>(`/api/users/${user.id}`, user);
   return response.data;
 };
 
 export const deleteUser = async (id: number): Promise<void> => {
-  await axiosInstance.delete(`/users/${id}`);
+  await axiosInstance.delete(`/api/users/${id}`);
 };
