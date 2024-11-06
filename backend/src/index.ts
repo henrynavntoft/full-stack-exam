@@ -4,8 +4,9 @@ import cors from 'cors';
 
 // Import Routes
 import userRoutes from './routes/users';
-// import adminRouter from './routes/admin';
 import authRoutes from './routes/auth';
+import arworksRoutes from './routes/artworks';
+
 
 
 const app: Express = express();
@@ -23,8 +24,8 @@ app.get('/', (req: Request, res: Response) => {
 // Users 
 app.use('/api/users', userRoutes);
 
-// Admin
-// app.use('/api/admin', adminRouter);
+// Artworks
+app.use('/api/artworks', arworksRoutes);
 
 // Auth
 app.use('/api/auth', authRoutes);

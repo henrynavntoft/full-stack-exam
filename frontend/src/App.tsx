@@ -4,6 +4,10 @@ import CreateUserForm from './components/CreateUserForm';
 import LoginForm from './components/LoginForm';
 import Dashboard from './components/Dashboard';
 import Header from './components/Header';
+import ArtworkList from './components/ArtworkList';
+import ArtworkDetails from './components/ArtworkDetails';
+
+
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(() => !!localStorage.getItem('token'));
@@ -50,6 +54,7 @@ function App() {
             )
           }
         />
+        <Route path="/artworks/:id" element={<ArtworkDetails />} /> {/* Dynamic Route */}
       </Routes>
     </Router>
   );
@@ -57,7 +62,7 @@ function App() {
 
 const Home = () => (
  <>
-    <h1>Home page</h1>
+    <ArtworkList />
 </>
 );
 
