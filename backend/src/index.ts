@@ -12,7 +12,14 @@ import arworksRoutes from './routes/artworks';
 const app: Express = express();
 
 app.use(helmet());
-app.use(cors( {origin: 'http://localhost:5173'}));
+
+app.use(cors({
+    origin: [
+        'http://localhost:5173',           // Local development
+        'https://full-stack-trail.vercel.app' // Deployed Vercel URL
+    ],
+    credentials: true,
+}));
 
 app.use(express.json());
 
@@ -37,7 +44,7 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
 });
 
 // Start the server
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });

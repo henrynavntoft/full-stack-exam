@@ -1,21 +1,16 @@
-import axios from 'axios';
+import axiosInstance from './axiosInstance';
 
-interface LoginCredentials {
+interface LoginPayload {
   email: string;
   password: string;
 }
 
-interface LoginResponse {
+interface AuthResponse {
   token: string;
-  user: {
-    id: number;
-    name: string;
-    email: string;
-    role: string;
-  };
+  user: { id: number; name: string; email: string; role: string };
 }
 
-export const loginUser = async (credentials: LoginCredentials): Promise<LoginResponse> => {
-  const response = await axios.post('http://localhost:3000/api/auth/login', credentials);
-  return response.data; // Response contains { token, user }
+export const loginUser = async (loginData: LoginPayload): Promise<AuthResponse> => {
+  const response = await axiosInstance.post<AuthResponse>('/auth/login', loginData);
+  return response.data;
 };
