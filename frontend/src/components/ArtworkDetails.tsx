@@ -1,31 +1,21 @@
-// src/components/ArtworkDetails.tsx
-import { useEffect, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { useParams } from 'react-router-dom';
-import axios from 'axios';
+import { fetchArtwork } from '../api/artworksApi';
 import { Artwork } from '../types';
 
 function ArtworkDetails() {
   const { id } = useParams<{ id: string }>(); // Retrieve the artwork ID from URL parameters
-  const [artwork, setArtwork] = useState<Artwork | null>(null);
-  const [loading, setLoading] = useState(true);
+  const artworkId = id ? parseInt(id) : undefined;
 
-  useEffect(() => {
-    const fetchArtwork = async () => {
-      try {
-        const response = await axios.get<Artwork>(`http://localhost:3000/api/artworks/${id}`);
-        setArtwork(response.data);
-      } catch (error) {
-        console.error("Error fetching artwork details:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
+  // Fetch the artwork data with TanStack Query
+  const { data: artwork, isLoading, isError } = useQuery<Artwork>({
+    queryKey: ['artwork', artworkId],
+    queryFn: () => fetchArtwork(artworkId!),
+    enabled: !!artworkId, // Only run the query if artworkId is valid
+  });
 
-    fetchArtwork();
-  }, [id]);
-
-  if (loading) return <p>Loading...</p>;
-  if (!artwork) return <p>Artwork not found.</p>;
+  if (isLoading) return <p>Loading...</p>;
+  if (isError || !artwork) return <p>Artwork not found.</p>;
 
   return (
     <div className="max-w-2xl mx-auto p-4 bg-white shadow-md rounded">
