@@ -24,6 +24,9 @@ interface ArtworkItem {
 }
 
 async function main() {
+  // Clear data from all tables (cascading deletes if foreign keys are used)
+  await prisma.$executeRaw`TRUNCATE TABLE "Production", "ArtworkColor", "Artwork", "Artist", "User" RESTART IDENTITY CASCADE`;
+
   // 1. Create an Admin User with a hashed password
   const hashedPassword = await bcrypt.hash('securepassword', 10);
   await prisma.user.create({
@@ -47,21 +50,23 @@ async function main() {
     // Insert Artist(s) if they don't exist, and collect their IDs
     const artistIds: number[] = [];
     for (const artistData of production || []) {
-      const artist = await prisma.artist.upsert({
-        where: { name: artistData.creator },
-        update: {},
-        create: {
-          name: artistData.creator,
-          birthDate: artistData.creator_date_of_birth ? new Date(artistData.creator_date_of_birth) : null,
-          deathDate: artistData.creator_date_of_death ? new Date(artistData.creator_date_of_death) : null,
-          nationality: artistData.creator_nationality,
-          gender: artistData.creator_gender,
-        },
-      });
-      artistIds.push(artist.id);
+      if (artistData.creator) { // Check if artist data exists
+        const artist = await prisma.artist.upsert({
+          where: { name: artistData.creator },
+          update: {},
+          create: {
+            name: artistData.creator,
+            birthDate: artistData.creator_date_of_birth ? new Date(artistData.creator_date_of_birth) : null,
+            deathDate: artistData.creator_date_of_death ? new Date(artistData.creator_date_of_death) : null,
+            nationality: artistData.creator_nationality,
+            gender: artistData.creator_gender,
+          },
+        });
+        artistIds.push(artist.id);
+      }
     }
 
-    // Insert Artwork
+    // Insert Artwork with associated colors and production period if available
     const createdArtwork = await prisma.artwork.create({
       data: {
         title: titles?.[0]?.title || 'Untitled',
