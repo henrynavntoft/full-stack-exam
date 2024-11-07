@@ -32,7 +32,7 @@ function Header({ isAuthenticated, onLogout }: HeaderProps) {
             Logout
           </button>
           <button>
-            <Link to="/dashboard" className="bg-primary text-primary-foreground px-4 py-2 rounded hover:bg-primary-dark">
+            <Link to="/dashboard" className="ml-4 bg-primary text-primary-foreground px-4 py-2 rounded hover:bg-primary-dark">
               Dashboard
             </Link>
           </button>
