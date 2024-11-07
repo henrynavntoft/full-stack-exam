@@ -5,7 +5,7 @@ import cors from 'cors';
 // Import Routes
 import userRoutes from './routes/users';
 import authRoutes from './routes/auth';
-import arworksRoutes from './routes/artworks';
+import artworksRoutes from './routes/artworks';
 
 
 
@@ -32,7 +32,7 @@ app.get('/', (req: Request, res: Response) => {
 app.use('/api/users', userRoutes);
 
 // Artworks
-app.use('/api/artworks', arworksRoutes);
+app.use('/api/artworks', artworksRoutes);
 
 // Auth
 app.use('/api/auth', authRoutes);
