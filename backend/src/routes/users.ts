@@ -47,7 +47,7 @@ router.post('/', async (req: AuthenticatedRequest, res: Response) => {
   }
 
   try {
-    const saltRounds = 10;
+    const saltRounds = 14;
     const hashedPassword = await bcrypt.hash(password, saltRounds);
 
     const user = await prisma.user.create({
@@ -70,7 +70,7 @@ router.put('/:id', authenticateToken, requireAdmin, async (req: AuthenticatedReq
     if (name) updatedData.name = name;
     if (email) updatedData.email = email;
     if (password) {
-      const saltRounds = 10;
+      const saltRounds = 14;
       updatedData.password = await bcrypt.hash(password, saltRounds);
     }
 
