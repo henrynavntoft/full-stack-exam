@@ -1,6 +1,7 @@
 import express, {Request, Response, Express, NextFunction} from 'express';
 import helmet from 'helmet';
 import cors from 'cors';
+import morgan from "morgan"
 
 // Import Routes
 import userRoutes from './routes/users';
@@ -12,6 +13,9 @@ import artworksRoutes from './routes/artworks';
 const app: Express = express();
 
 app.use(helmet());
+
+// logs http actions to the terminal
+app.use(morgan('dev'));
 
 app.use(cors({
     origin: [
