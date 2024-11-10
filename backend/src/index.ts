@@ -1,6 +1,8 @@
 import express, {Request, Response, Express, NextFunction} from 'express';
 import helmet from 'helmet';
 import cors from 'cors';
+import cookieParser from 'cookie-parser';
+
 
 // Import Routes
 import userRoutes from './routes/users';
@@ -12,6 +14,7 @@ import artworksRoutes from './routes/artworks';
 const app: Express = express();
 
 app.use(helmet());
+app.use(cookieParser());
 
 app.use(cors({
     origin: [
