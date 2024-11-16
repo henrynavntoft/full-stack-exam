@@ -17,7 +17,7 @@ const authenticateToken = (req: AuthenticatedRequest, res: Response, next: NextF
   }
 
   try {
-    const decoded = jwt.verify(token, 'your_jwt_secret') as { userId: number; role: string };
+    const decoded = jwt.verify(token, 'your_jwt_secret', {algorithms: ['HS256']}) as { userId: number; role: string };
     req.user = decoded; // Add decoded token data (user info) to the request object
     next();
   } catch (error) {
