@@ -39,24 +39,57 @@ router.get('/:id', authenticateToken, requireAdmin, async (req: AuthenticatedReq
 router.post('/', async (req: AuthenticatedRequest, res: Response) => {
   const { name, email, password, confirmPassword } = req.body;
 
+  // Check if the authenticated user is an admin (?)
+  // if (req.user.role !== 'admin') {
+  //  return res.status(403).json({ error: "You do not have permission to create users." });
+  // }
+
+  // Input validation
   if (!name || !email || !password || !confirmPassword) {
-    return res.status(400).json({ error: "Name, email, password, and confirm password are required." });
+    return res.status(400).json({ error: "All fields are required." });
   }
+
+  const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailPattern.test(email)) {
+    return res.status(400).json({ error: "Invalid email format." });
+  }
+
+  const passwordPattern = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=_]).{8,}$/;
+  if (!passwordPattern.test(password)) {
+    return res.status(400).json({
+      error: "Password must be at least 8 characters long, include uppercase, lowercase, digit, and special character.",
+    });
+  }
+
   if (password !== confirmPassword) {
     return res.status(400).json({ error: "Passwords do not match." });
   }
 
   try {
+    // Check if email already exists
+    const existingUser = await prisma.user.findUnique({ where: { email } });
+    if (existingUser) {
+      return res.status(409).json({ error: "Email already in use." });
+    }
+
+    // Hash password
     const saltRounds = 14;
     const hashedPassword = await bcrypt.hash(password, saltRounds);
 
+    // Create user
     const user = await prisma.user.create({
       data: { name, email, password: hashedPassword },
     });
-    res.status(201).json(user);
+
+    res.status(201).json({ message: "User created successfully.", user });
   } catch (error) {
     console.error("Error creating user:", error);
-    res.status(500).json({ error: "Failed to create user." });
+
+    if (error.code === "P2002") { // Prisma unique constraint error
+      return res.status(409).json({ error: "Email already in use." });
+    }
+
+    res.status(500).json({ error: "Failed to create user. Please try again." });
   }
 });
 
