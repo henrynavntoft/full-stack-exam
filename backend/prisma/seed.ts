@@ -37,7 +37,7 @@ async function main() {
   });
 
   // 2. Fetch Artwork Data from SMK API
-  const smkApiUrl = 'https://api.smk.dk/api/v1/art/search/?keys=*&offset=0&rows=50';
+  const smkApiUrl = 'https://api.smk.dk/api/v1/art/search/?keys=*&filters=[has_image:true]&offset=0&rows=50';
   const response = await axios.get<{ items: ArtworkItem[] }>(smkApiUrl);
   const artworks = response.data.items;
 
