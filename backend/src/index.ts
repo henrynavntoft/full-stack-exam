@@ -3,6 +3,8 @@ import helmet from 'helmet';
 import cors from 'cors';
 import rateLimit from 'express-rate-limit';
 import morgan from "morgan"
+import cookieParser from 'cookie-parser';
+
 
 // Import Routes
 import userRoutes from './routes/users';
@@ -30,6 +32,7 @@ app.use(helmet());
 
 // logs http actions to the terminal
 app.use(morgan('dev'));
+app.use(cookieParser());
 
 app.use(cors({
     origin: [

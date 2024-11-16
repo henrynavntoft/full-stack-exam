@@ -22,9 +22,16 @@ router.post('/login', async (req: Request, res: Response) => {
 
     // Generate a JWT token
     const token = jwt.sign({ userId: user.id, role: user.role }, 'your_jwt_secret', { algorithm: 'HS256', expiresIn: '1h' });
+
+    // insert jwt token into a cookie to make it more secure
+    res.cookie('token', token, {
+      httpOnly: true,      // now javascript cannot access it
+      secure: process.env.NODE_ENV === 'production', // rely on https when in production
+      maxAge: 3600000,     // 1 hour
+      sameSite: 'Strict',  // change to lax if we want cross-site cookie usage
+    });
     
     res.json({
-      token,
       user: {
         id: user.id,
         name: user.name,
@@ -35,6 +42,12 @@ router.post('/login', async (req: Request, res: Response) => {
   } catch (error) {
     res.status(500).json({ error: 'Login failed. Please try again.' });
   }
+});
+
+// delete the json web token when the user logs out
+router.post('/logout', (req: Request, res: Response) => {
+  res.clearCookie('token');
+  res.status(200).json({ message: 'Logged out successfully' });
 });
 
 export default router;
