@@ -1,6 +1,8 @@
 import express, {Request, Response, Express, NextFunction} from 'express';
 import helmet from 'helmet';
 import cors from 'cors';
+import rateLimit from 'express-rate-limit';
+
 
 // Import Routes
 import userRoutes from './routes/users';
@@ -10,6 +12,19 @@ import artworksRoutes from './routes/artworks';
 
 
 const app: Express = express();
+
+// set up rate limit with express-rate-limit
+const limiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes in milliseconds
+    max: 100, // Limit each IP to 100 requests per windowMs
+    handler: (req, res) => {
+      res.status(429).json({
+        error: 'Too many requests, please try again later.',
+      });
+    },
+  });
+
+app.use(limiter);
 
 app.use(helmet());
 
