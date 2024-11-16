@@ -2,6 +2,13 @@ import React, { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { createUser } from '../api/usersApi';
 
+// sanitize inputs function to prevent XSS attacks
+function sanitizeInput(input) {
+  return input.replace(/[&<>"']/g, function(match) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[match];
+  });
+}
+
 interface FormData {
   name: string;
   email: string;
@@ -43,14 +50,35 @@ function CreateUserForm() {
     setError(null);
     setSuccess(null);
 
-    if (formData.password !== formData.confirmPassword) {
-      setError("Passwords do not match");
-      return;
+    const name = sanitizeInput(formData.name);
+    const email = sanitizeInput(formData.email);
+
+    if (!name || !email || !formData.password || !formData.confirmPassword) {
+        setError("Please fill in all fields.");
+        return;
     }
 
-    const { name, email, password, confirmPassword } = formData;
-    mutation.mutate({ name, email, password, confirmPassword });
-  };
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailPattern.test(email)) {
+        setError("Invalid email address.");
+        return;
+    }
+
+    if (formData.password !== formData.confirmPassword) {
+        setError("Passwords do not match.");
+        return;
+    }
+
+    const passwordPattern = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=_]).{8,}$/;
+    if (!passwordPattern.test(formData.password)) {
+        setError(
+            "Password must be at least 8 characters long, include uppercase, lowercase, digit, and special character."
+        );
+        return;
+    }
+
+    mutation.mutate({ name, email, password: formData.password, confirmPassword: formData.confirmPassword });
+};
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-background">
