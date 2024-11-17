@@ -10,6 +10,27 @@ router.post('/login', async (req: Request, res: Response) => {
   const { email, password } = req.body;
 
   try {
+
+    // check if body is empty
+    if (!email || !password) {
+      return res.status(400).json({ error: 'All fields are required' });
+    }
+
+    // check if email is valid
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailPattern.test(email)) {
+      return res.status(400).json({ error: 'Invalid email format' });
+    }
+
+    // check if password is valid
+    const passwordPattern = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=_]).{8,}$/;
+    if (!passwordPattern.test(password)) {
+      return res.status(400).json({
+        error: 'Password must be at least 8 characters long, include uppercase, lowercase, digit, and special character',
+      });
+    }
+    
+    // check if user exists
     const user = await prisma.user.findUnique({ where: { email } });
     if (!user) {
       return res.status(400).json({ error: 'Invalid email or password' });
