@@ -6,15 +6,13 @@ const axiosInstance = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
+  withCredentials: true, // Include cookies in requests
 });
 
-// Add interceptors if needed, for example, to add a token
+// Add interceptors if needed
 axiosInstance.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
+    // Remove token handling since cookies are used
     return config;
   },
   (error) => Promise.reject(error)

@@ -6,11 +6,12 @@ interface LoginPayload {
 }
 
 interface AuthResponse {
-  token: string;
   user: { id: number; name: string; email: string; role: string };
 }
 
 export const loginUser = async (loginData: LoginPayload): Promise<AuthResponse> => {
-  const response = await axiosInstance.post<AuthResponse>('/api/auth/login', loginData);
+  const response = await axiosInstance.post<AuthResponse>('/api/auth/login', loginData, {
+    withCredentials: true,
+  });
   return response.data;
 };
