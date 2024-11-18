@@ -85,7 +85,7 @@ router.post('/', async (req: AuthenticatedRequest, res: Response) => {
   } catch (error) {
     console.error("Error creating user:", error);
 
-    if (error.code === "P2002") { // Prisma unique constraint error
+    if ((error as any).code === "P2002") { // Prisma unique constraint error
       return res.status(409).json({ error: "Email already in use." });
     }
 

@@ -49,7 +49,7 @@ router.post('/login', async (req: Request, res: Response) => {
       httpOnly: true,      // now javascript cannot access it
       secure: process.env.NODE_ENV === 'production', // rely on https when in production
       maxAge: 3600000,     // 1 hour
-      sameSite: 'Strict',  // change to lax if we want cross-site cookie usage
+      sameSite: 'strict',  // change to lax if we want cross-site cookie usage
     });
     
     res.json({
