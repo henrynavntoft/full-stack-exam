@@ -10,6 +10,7 @@ interface LoginFormProps {
 function LoginForm({ onLogin }: LoginFormProps) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false); // State to toggle password visibility
   const [error, setError] = useState<string | null>(null);
   const [validationErrors, setValidationErrors] = useState<{ email?: string; password?: string }>({});
   const navigate = useNavigate();
@@ -37,11 +38,11 @@ function LoginForm({ onLogin }: LoginFormProps) {
     }
 
     // Password validation
-    const passwordPattern = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=_]).{8,}$/;
+    const passwordPattern = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%!-^&+=_]).{8,}$/;
 
     if (!password.trim()) {
       errors.password = 'Password is required';
-    } else if (!passwordPattern.test(formData.password)) {
+    } else if (!passwordPattern.test(password)) {
       errors.password = 'Password must be at least 8 characters long, include uppercase, lowercase, digit, and special character.';
     }
 
@@ -84,10 +85,10 @@ function LoginForm({ onLogin }: LoginFormProps) {
             )}
           </div>
 
-          <div>
+          <div className="relative">
             <label className="block text-sm font-medium text-foreground mb-1">Password</label>
             <input
-              type="password"
+              type={showPassword ? 'text' : 'password'}
               name="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -96,6 +97,13 @@ function LoginForm({ onLogin }: LoginFormProps) {
               }`}
               required
             />
+            <button
+              type="button"
+              onClick={() => setShowPassword((prev) => !prev)}
+              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-sm text-primary hover:text-primary-dark"
+            >
+              {showPassword ? 'Hide' : 'Show'}
+            </button>
             {validationErrors.password && (
               <p className="text-destructive text-sm mt-1">{validationErrors.password}</p>
             )}

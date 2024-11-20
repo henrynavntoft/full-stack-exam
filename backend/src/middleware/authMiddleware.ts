@@ -1,4 +1,3 @@
-// src/middleware/authMiddleware.ts
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 
@@ -17,7 +16,13 @@ const authenticateToken = (req: AuthenticatedRequest, res: Response, next: NextF
   }
 
   try {
-    const decoded = jwt.verify(token, 'your_jwt_secret', {algorithms: ['HS256']}) as { userId: number; role: string };
+    // The secret should be stored in an environment variable
+    const secret = process.env.JWT_SECRET;
+    if (!secret) {
+      throw new Error('JWT secret is not defined in the environment variables');
+    }
+
+    const decoded = jwt.verify(token, secret, { algorithms: ['HS256'] }) as { userId: number; role: string };
     req.user = decoded; // Add decoded token data (user info) to the request object
     next();
   } catch (error) {

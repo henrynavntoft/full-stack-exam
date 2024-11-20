@@ -1,9 +1,12 @@
 import express, {Request, Response, Express, NextFunction} from 'express';
+
 import helmet from 'helmet';
 import cors from 'cors';
 import rateLimit from 'express-rate-limit';
 import morgan from "morgan"
 import cookieParser from 'cookie-parser';
+import dotenv from 'dotenv';
+
 
 
 // Import Routes
@@ -11,7 +14,7 @@ import userRoutes from './routes/users';
 import authRoutes from './routes/auth';
 import artworksRoutes from './routes/artworks';
 
-
+dotenv.config({ path: './.env' });
 
 const app: Express = express();
 

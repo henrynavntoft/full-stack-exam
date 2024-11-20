@@ -26,7 +26,7 @@ interface ArtworkItem {
 async function main() {
 
   // 1. Create an Admin User with a hashed password
-  const hashedPassword = await bcrypt.hash('securepassword', 10);
+  const hashedPassword = await bcrypt.hash('Securepassword12323!', 10);
   await prisma.user.create({
     data: {
       name: 'Admin User',

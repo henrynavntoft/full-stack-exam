@@ -2,6 +2,9 @@ import { Router, Request, Response } from 'express';
 import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 const router = Router();
 const prisma = new PrismaClient();
@@ -23,7 +26,7 @@ router.post('/login', async (req: Request, res: Response) => {
     }
 
     // check if password is valid
-    const passwordPattern = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=_]).{8,}$/;
+    const passwordPattern = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%!-^&+=_]).{8,}$/;
     if (!passwordPattern.test(password)) {
       return res.status(400).json({
         error: 'Password must be at least 8 characters long, include uppercase, lowercase, digit, and special character',
@@ -41,8 +44,15 @@ router.post('/login', async (req: Request, res: Response) => {
       return res.status(400).json({ error: 'Invalid email or password' });
     }
 
-    // Generate a JWT token
-    const token = jwt.sign({ userId: user.id, role: user.role }, 'your_jwt_secret', { algorithm: 'HS256', expiresIn: '1h' });
+    // Generate a JWT token 
+    // The secret should be stored in an environment variable
+    const secret = process.env.JWT_SECRET;
+    if (!secret) {
+      throw new Error('JWT secret is not defined in the environment variables');
+    }
+
+    const token = jwt.sign({ userId: user.id, role: user.role }, 
+      secret, { algorithm: "HS256", expiresIn: '1h' });
 
     // insert jwt token into a cookie to make it more secure
     res.cookie('token', token, {
@@ -61,6 +71,7 @@ router.post('/login', async (req: Request, res: Response) => {
       },
     });
   } catch (error) {
+    console.error('Error:', error);
     res.status(500).json({ error: 'Login failed. Please try again.' });
   }
 });
