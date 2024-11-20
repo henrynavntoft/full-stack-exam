@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { createUser } from '../api/usersApi';
+import DOMPurify from 'dompurify';
+
 
 // sanitize inputs function to prevent XSS attacks
-function sanitizeInput(input) {
-  return input.replace(/[&<>"']/g, function(match) {
-      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[match];
-  });
+function sanitizeInput(input: string | null | undefined): string {
+  if (!input) return ''; // Handle null/undefined
+  return DOMPurify.sanitize(input); // Use DOMPurify for sanitization
 }
 
 interface FormData {
