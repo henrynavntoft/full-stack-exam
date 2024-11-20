@@ -39,8 +39,7 @@ app.use(cookieParser());
 
 app.use(cors({
     origin: [
-        'http://localhost:5173',           // Local development
-        'https://full-stack-trail.vercel.app' // Deployed Vercel URL
+       process.env.CORS_ORIGINS || '',
     ],
     credentials: true,
 }));
