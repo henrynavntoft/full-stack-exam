@@ -5,7 +5,6 @@ import { Artwork } from '../types';
 // Fetch all artworks
 export const fetchArtworks = async (page = 1) => {
   const response = await axiosInstance.get(`/api/artworks?page=${page}`);
-  console.log('API Response for page:', page, response.data);
   return response.data;
 };
 
