@@ -1,6 +1,8 @@
 import { useNavigate } from 'react-router-dom';
 import UserList from './UserList';
 import ArtworkList from './ArtworkList';
+import { useState } from 'react';
+
 
 interface DashboardProps {
   onLogout: () => void;
@@ -10,9 +12,19 @@ interface DashboardProps {
 function Dashboard({ onLogout, user }: DashboardProps) {
   const navigate = useNavigate();
 
+  const [searchQuery, setSearchQuery] = useState('');
+  const [period, setPeriod] = useState('all');
+  const [artist, setArtist] = useState('all');
+
   const handleLogout = () => {
     onLogout();
     navigate('/login');
+  };
+
+  const resetFilters = () => {
+    setSearchQuery('');
+    setPeriod('all');
+    setArtist('all');
   };
 
   return (
@@ -36,19 +48,31 @@ function Dashboard({ onLogout, user }: DashboardProps) {
         <section>
           <div className="flex justify-between mb-4">
             <h2 className="text-2xl font-bold text-primary">Filters</h2>
-            <button className="text-primary hover:text-primary-dark">Reset Filters</button>
+            <button onClick={resetFilters} className="text-primary hover:text-primary-dark">
+              Reset Filters
+            </button>
           </div>
           <div className="flex flex-wrap -mx-4">
 
           <div className="w-full md:w-1/2 xl:w-1/3 px-4 mb-4">
           <label className="block mb-2 text-sm text-muted-foreground">Search</label>
 
-          <input className="block w-full px-4 py-2 text-sm text-muted-foreground bg-white border border-border rounded-lg focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary" type="text" placeholder="Title, period.." name="search" />
+          <input 
+          className="block w-full px-4 py-2 text-sm text-muted-foreground bg-white border border-border rounded-lg focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary" type="text" placeholder="Title, period.." name="search" 
+          type="text"
+          placeholder="Title, period.."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}          
+          />
           </div>
 
             <div className="w-full md:w-1/2 xl:w-1/3 px-4 mb-4">
             <label className="block mb-2 text-sm text-muted-foreground">Period</label>
-            <select className="block w-full px-4 py-2 text-sm text-muted-foreground bg-white border border-border rounded-lg focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary" name="period">
+            <select 
+            className="block w-full px-4 py-2 text-sm text-muted-foreground bg-white border border-border rounded-lg focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary" name="period"
+            value={period}
+            onChange={(e) => setPeriod(e.target.value)}
+            >
               <option value="all">All</option>
               <option value="renaissance">Renaissance</option>
               <option value="baroque">Baroque</option>
@@ -57,7 +81,11 @@ function Dashboard({ onLogout, user }: DashboardProps) {
             </div>
               <div className="w-full md:w-1/2 xl:w-1/3 px-4 mb-4">
               <label className="block mb-2 text-sm text-muted-foreground">Artists</label>
-              <select className="block w-full px-4 py-2 text-sm text-muted-foreground bg-white border border-border rounded-lg focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary" name="artists">
+              <select 
+              className="block w-full px-4 py-2 text-sm text-muted-foreground bg-white border border-border rounded-lg focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary" name="artists"
+              value={artist}
+              onChange={(e) => setArtist(e.target.value)}
+              >
                 <option value="all">All</option>
                 <option value="leonardo">Leonardo da Vinci</option>
                 <option value="raphael">Raphael</option>
@@ -70,7 +98,8 @@ function Dashboard({ onLogout, user }: DashboardProps) {
         {/* Display artworks */}
         <section>
           <h2 className="text-2xl font-bold text-primary mb-2">Artworks</h2>
-          <ArtworkList user={user} />
+          <ArtworkList user={user} filters={{ searchQuery, period, artist }}
+ />
         </section>
 
         {/* Only render UserList if the user has an ADMIN role */}
