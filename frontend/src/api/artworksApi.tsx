@@ -17,3 +17,15 @@ export const fetchArtwork = async (id: number): Promise<Artwork> => {
   const response = await axiosInstance.get<Artwork>(`/api/artworks/${id}`);
   return response.data;
 };
+
+// Like
+export const likeArtwork = async (id: number, userId) => {
+  const response = await axiosInstance.post(`/api/artworks/${id}/like`, { userId });
+  return response.data;
+}
+
+// Unlike
+export const deleteLikeArtwork = async (id: number, userId) => {
+  const response = await axiosInstance.delete(`/api/artworks/${id}/like`, { userId });
+  return response.data;
+}

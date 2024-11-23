@@ -4,7 +4,11 @@ import { fetchArtworks } from '../api/artworksApi';
 import ArtworkCard from './ArtworkCard';
 import { useState, useEffect } from 'react';
 
-function ArtworkList() {
+interface ArtworkListProps {
+  user: { id: number; name: string; email: string; role: string } | null;
+}
+
+function ArtworkList({user}: ArtworkListProps) {
   const [page, setPage] = useState(1);
   const [art, setArt] = useState([]);
   const [totalArtworks, setTotalArtworks] = useState(0);
@@ -49,7 +53,7 @@ function ArtworkList() {
 
       <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 m-4">
         {art?.map((artwork) => (
-          <ArtworkCard key={artwork.id} artwork={artwork} />
+          <ArtworkCard key={artwork.id} artwork={artwork} user={user} />
         ))}
       </ul>
 

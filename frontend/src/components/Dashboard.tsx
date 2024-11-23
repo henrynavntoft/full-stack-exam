@@ -36,7 +36,7 @@ function Dashboard({ onLogout, user }: DashboardProps) {
         {/* Display artworks */}
         <section>
           <h2 className="text-2xl font-bold text-primary mb-2">Artworks</h2>
-          <ArtworkList />
+          <ArtworkList user={user} />
         </section>
 
         {/* Only render UserList if the user has an ADMIN role */}
