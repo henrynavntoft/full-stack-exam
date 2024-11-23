@@ -39,7 +39,7 @@ function ArtworkList() {
       {isLoading && page === 1 && <p>Loading artworks...</p>}
       {isError && <p>Error loading artworks: {(error as Error).message}</p>}
 
-      <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 m-4">
         {art?.map((artwork) => (
           <ArtworkCard key={artwork.id} artwork={artwork} />
         ))}
@@ -47,7 +47,7 @@ function ArtworkList() {
 
       <button
         onClick={loadMoreArt}
-        className="mt-4 bg-primary text-white px-4 py-2 rounded hover:bg-primary-dark transition"
+        className="m-4 bg-primary text-primary-foreground px-4 py-2 rounded hover:bg-primary-dark"
         disabled={isFetching || isLoading}
       >
         {isFetching || isLoading ? 'Loading...' : 'Load More'}
