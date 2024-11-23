@@ -1,5 +1,5 @@
 import { Router, Request, Response } from 'express';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, Prisma } from '@prisma/client';
 
 
 const prisma = new PrismaClient();
@@ -18,21 +18,35 @@ const router = Router();
 
 // GET all artworks
 router.get('/', async (req: Request, res: Response) => {
-  const { page = 1 } = req.query; // Defaults to page 1 if no page is provided
-  const pageSize = 5;
+  const { page = 1, search } = req.query;
+  const pageSize = 5; 
 
   try {
-    const totalArtworks = await prisma.artwork.count();
+    
+    const where: Prisma.ArtworkWhereInput = search
+      ? {
+          title: {
+            contains: search as string,
+            mode: Prisma.QueryMode.insensitive, 
+          },
+        }
+      : {}; 
 
+    const totalArtworks = await prisma.artwork.count({
+      where,
+    });
+
+    
     const artworks = await prisma.artwork.findMany({
+      where,
       skip: (Number(page) - 1) * pageSize,
       take: pageSize,
     });
 
     res.json([ artworks, totalArtworks ]);
   } catch (error) {
-    console.error("Error fetching artworks:", error);
-    res.status(500).json({ error: "Failed to fetch artworks." });
+    console.error('Error fetching artworks:', error);
+    res.status(500).json({ error: 'Failed to fetch artworks.' });
   }
 });
 

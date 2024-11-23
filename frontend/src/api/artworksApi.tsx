@@ -3,8 +3,16 @@ import axiosInstance from './axiosInstance';
 import { Artwork } from '../types';
 
 // Fetch all artworks
-export const fetchArtworks = async (page = 1) => {
-  const response = await axiosInstance.get(`/api/artworks?page=${page}`);
+export const fetchArtworks = async (page = 1, filters = {}) => {
+  const { searchQuery } = filters;
+
+  
+  const queryParams = new URLSearchParams({
+    page: page.toString(),
+    ...(searchQuery && { search: searchQuery }), 
+  }).toString();
+
+  const response = await axiosInstance.get(`/api/artworks?${queryParams}`);
   
   const [artworks, totalArtworks] = response.data;
 
