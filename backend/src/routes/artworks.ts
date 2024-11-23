@@ -22,11 +22,14 @@ router.get('/', async (req: Request, res: Response) => {
   const pageSize = 5;
 
   try {
+    const totalArtworks = await prisma.artwork.count();
+
     const artworks = await prisma.artwork.findMany({
       skip: (Number(page) - 1) * pageSize,
       take: pageSize,
     });
-    res.json(artworks);
+
+    res.json([ artworks, totalArtworks ]);
   } catch (error) {
     console.error("Error fetching artworks:", error);
     res.status(500).json({ error: "Failed to fetch artworks." });

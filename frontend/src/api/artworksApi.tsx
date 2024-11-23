@@ -5,7 +5,11 @@ import { Artwork } from '../types';
 // Fetch all artworks
 export const fetchArtworks = async (page = 1) => {
   const response = await axiosInstance.get(`/api/artworks?page=${page}`);
-  return response.data;
+  
+  const [artworks, totalArtworks] = response.data;
+
+  return { artworks, totalArtworks };
+
 };
 
 // Fetch a single artwork by ID

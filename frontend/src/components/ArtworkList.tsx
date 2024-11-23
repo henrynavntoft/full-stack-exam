@@ -7,9 +7,11 @@ import { useState, useEffect } from 'react';
 function ArtworkList() {
   const [page, setPage] = useState(1);
   const [art, setArt] = useState([]);
+  const [totalArtworks, setTotalArtworks] = useState(0);
+
 
   const {
-    data: artworks,
+    data,
     isLoading,
     isError,
     error,
@@ -21,18 +23,24 @@ function ArtworkList() {
   });
 
   useEffect(() => {
-    if (artworks) {
-      if (page === 1) {
-        setArt(artworks); 
-      } else {
-        setArt((prevArtworks) => [...prevArtworks, ...artworks]); 
-      }
+    if (data) {
+      const { artworks, totalArtworks: total } = data;
+
+    if (page === 1) {
+      setArt(artworks); 
+    } else {
+      setArt((prevArtworks) => [...prevArtworks, ...artworks]); 
     }
-  }, [artworks, page]); 
+    setTotalArtworks(total); 
+  }
+  }, [data, page]); 
 
   const loadMoreArt = () => {
     setPage((prevPage) => prevPage + 1); 
   };
+
+  const isAllFetched = art.length >= totalArtworks; 
+
 
   return (
     <div>
@@ -48,10 +56,10 @@ function ArtworkList() {
       <button
         onClick={loadMoreArt}
         className="m-4 bg-primary text-primary-foreground px-4 py-2 rounded hover:bg-primary-dark"
-        disabled={isFetching || isLoading}
+        disabled={isFetching || isLoading || isAllFetched}
       >
-        {isFetching || isLoading ? 'Loading...' : 'Load More'}
-      </button>
+        {isFetching || isLoading ? 'Loading...' : isAllFetched ? 'All Artworks Loaded' : 'Load More'}
+        </button>
     </div>
   );
 }
