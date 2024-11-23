@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import UserList from './UserList';
+import ArtworkList from './ArtworkList';
 
 interface DashboardProps {
   onLogout: () => void;
@@ -29,6 +30,13 @@ function Dashboard({ onLogout, user }: DashboardProps) {
           >
             Logout
           </button>
+        
+        </section>
+        
+        {/* Display artworks */}
+        <section>
+          <h2 className="text-2xl font-bold text-primary mb-2">Artworks</h2>
+          <ArtworkList />
         </section>
 
         {/* Only render UserList if the user has an ADMIN role */}

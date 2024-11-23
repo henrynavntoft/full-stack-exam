@@ -6,15 +6,33 @@ const prisma = new PrismaClient();
 const router = Router();
 
 // GET all artworks
+//router.get('/', async (req: Request, res: Response) => {
+//  try {
+//    const artworks = await prisma.artwork.findMany();
+//    res.json(artworks);
+//  } catch (error) {
+//    console.error("Error fetching artworks:", error);
+//    res.status(500).json({ error: "Failed to fetch artworks." });
+//  }
+//});
+
+// GET all artworks
 router.get('/', async (req: Request, res: Response) => {
+  const { page = 1 } = req.query; // Defaults to page 1 if no page is provided
+  const pageSize = 5;
+
   try {
-    const artworks = await prisma.artwork.findMany();
+    const artworks = await prisma.artwork.findMany({
+      skip: (Number(page) - 1) * pageSize,
+      take: pageSize,
+    });
     res.json(artworks);
   } catch (error) {
     console.error("Error fetching artworks:", error);
     res.status(500).json({ error: "Failed to fetch artworks." });
   }
 });
+
 
 // GET artwork by ID
 router.get('/:id', async (req: Request, res: Response) => {
