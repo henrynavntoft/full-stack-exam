@@ -10,30 +10,59 @@ import ArtworkDetails from './components/ArtworkDetails';
 
 
 function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(() => !!localStorage.getItem('token'));
+
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState<{ id: number; name: string; email: string; role: string } | null>(null);
+  const [loading, setLoading] = useState(true); 
 
+  
   useEffect(() => {
-    const storedUser = localStorage.getItem('user');
-    const token = localStorage.getItem('token');
+    const fetchUserDetails = async () => {
+      try {
+        const response = await fetch('/api/auth/me', {
+          method: 'GET',
+          credentials: 'include', 
+        });
 
-    if (token && storedUser) {
-      setUser(JSON.parse(storedUser));
-      setIsAuthenticated(true);
-    }
+        if (response.ok) {
+          const data = await response.json();
+          setUser(data); 
+          setIsAuthenticated(true);
+        } else {
+          setIsAuthenticated(false);
+          setUser(null);
+        }
+      } catch (error) {
+        console.error('Error fetching user details:', error);
+        setIsAuthenticated(false);
+        setUser(null);
+      } finally {
+        setLoading(false); 
+      }
+    };
+
+    fetchUserDetails();
   }, []);
+
 
   const handleLogin = (loggedInUser: { id: number; name: string; email: string; role: string }) => {
     setIsAuthenticated(true);
     setUser(loggedInUser);
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    setIsAuthenticated(false);
-    setUser(null);
+  const handleLogout = async () => {
+    try {
+      await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' });
+      setIsAuthenticated(false);
+      setUser(null);
+    } catch (error) {
+      console.error('Error during logout:', error);
+    }
   };
+
+  if (loading) {
+    return <div>Loading...</div>; 
+  }
 
   return (
     <Router>
