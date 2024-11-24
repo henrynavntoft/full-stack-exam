@@ -69,8 +69,9 @@ function LoginForm({ onLogin }: LoginFormProps) {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-foreground mb-1">Email</label>
+            <label htmlFor="email" className="block text-sm font-medium text-foreground mb-1">Email</label>
             <input
+              id="email"
               type="email"
               name="email"
               value={email}
@@ -86,8 +87,9 @@ function LoginForm({ onLogin }: LoginFormProps) {
           </div>
 
           <div className="relative">
-            <label className="block text-sm font-medium text-foreground mb-1">Password</label>
+            <label htmlFor="password" className="block text-sm font-medium text-foreground mb-1">Password</label>
             <input
+              id="password"
               type={showPassword ? 'text' : 'password'}
               name="password"
               value={password}
