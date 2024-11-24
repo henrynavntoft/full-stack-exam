@@ -6,7 +6,7 @@ import { useState, useEffect } from 'react';
 
 interface ArtworkListProps {
   user: { id: number; name: string; email: string; role: string } | null;
-  filters: { searchQuery: string };
+  filters: { searchQuery: string, artist: string };
 }
 
 function ArtworkList({user, filters = { searchQuery: ''}}: ArtworkListProps) {
@@ -14,7 +14,7 @@ function ArtworkList({user, filters = { searchQuery: ''}}: ArtworkListProps) {
   const [art, setArt] = useState([]);
   const [totalArtworks, setTotalArtworks] = useState(0);
 
-  const {searchQuery} = filters;
+  const {searchQuery, artist} = filters;
 
 
   const {
@@ -24,7 +24,7 @@ function ArtworkList({user, filters = { searchQuery: ''}}: ArtworkListProps) {
     error,
     isFetching,
   } = useQuery({
-    queryKey: ['artworks', page, filters.searchQuery],
+    queryKey: ['artworks', page, filters.searchQuery, filters.artist],
     queryFn: () => fetchArtworks(page, filters),
     keepPreviousData: true,
   });
@@ -40,7 +40,7 @@ function ArtworkList({user, filters = { searchQuery: ''}}: ArtworkListProps) {
     }
     setTotalArtworks(total); 
   }
-  }, [data, page, searchQuery]); 
+  }, [data, page, searchQuery, artist]); 
 
   const loadMoreArt = () => {
     setPage((prevPage) => prevPage + 1); 

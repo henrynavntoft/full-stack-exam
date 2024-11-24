@@ -14,7 +14,7 @@ function Dashboard({ onLogout, user }: DashboardProps) {
 
   const [searchQuery, setSearchQuery] = useState('');
   const [period, setPeriod] = useState('all');
-  const [artist, setArtist] = useState('all');
+  const [artist, setArtist] = useState('');
 
   const handleLogout = () => {
     onLogout();
@@ -24,7 +24,7 @@ function Dashboard({ onLogout, user }: DashboardProps) {
   const resetFilters = () => {
     setSearchQuery('');
     setPeriod('all');
-    setArtist('all');
+    setArtist('');
   };
 
   return (
@@ -58,7 +58,7 @@ function Dashboard({ onLogout, user }: DashboardProps) {
           <label className="block mb-2 text-sm text-muted-foreground">Search</label>
 
           <input 
-          className="block w-full px-4 py-2 text-sm text-muted-foreground bg-white border border-border rounded-lg focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary" type="text" placeholder="Title, period.." name="search" 
+          className="block w-full px-4 py-2 text-sm text-muted-foreground bg-white border border-border rounded-lg focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary" type="text" placeholder="Search by title" name="search" 
           type="text"
           placeholder="Title, period.."
           value={searchQuery}
@@ -86,10 +86,13 @@ function Dashboard({ onLogout, user }: DashboardProps) {
               value={artist}
               onChange={(e) => setArtist(e.target.value)}
               >
-                <option value="all">All</option>
-                <option value="leonardo">Leonardo da Vinci</option>
-                <option value="raphael">Raphael</option>
-                <option value="michelangelo">Michelangelo</option>
+                <option value="">All</option>
+                <option value="parmigianino">Parmigianino</option>
+                <option value="carpi">Carpi</option>
+                <option value="saenredam">Saenredam</option>
+                <option value="stimmer">Stimmer</option>
+                <option value="rihel">Rihel</option>
+                <option value="trento">Trento</option>
               </select>
               </div>
           </div>
@@ -98,7 +101,7 @@ function Dashboard({ onLogout, user }: DashboardProps) {
         {/* Display artworks */}
         <section>
           <h2 className="text-2xl font-bold text-primary mb-2">Artworks</h2>
-          <ArtworkList user={user} filters={{ searchQuery }}
+          <ArtworkList user={user} filters={{ searchQuery, artist }}
  />
         </section>
 

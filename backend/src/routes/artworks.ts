@@ -18,32 +18,49 @@ const router = Router();
 
 // GET all artworks
 router.get('/', async (req: Request, res: Response) => {
-  const { page = 1, search } = req.query;
-  const pageSize = 5; 
+  const { page = 1, search, artist } = req.query;
+  const pageSize = 5;
 
   try {
     
-    const where: Prisma.ArtworkWhereInput = search
-      ? {
-          title: {
-            contains: search as string,
-            mode: Prisma.QueryMode.insensitive, 
+    const where: Prisma.ArtworkWhereInput = {
+      ...(search && {
+        title: {
+          contains: search as string,
+          mode: Prisma.QueryMode.insensitive,
+        },
+      }),
+      ...(artist && {
+        artistProductions: {
+          some: {
+            artist: {
+              name: {
+                contains: artist as string,
+                mode: Prisma.QueryMode.insensitive,
+              },
+            },
           },
-        }
-      : {}; 
+        },
+      }),
+    };
 
-    const totalArtworks = await prisma.artwork.count({
-      where,
-    });
+    console.log('Generated where clause:', JSON.stringify(where, null, 2));
 
     
+    const totalArtworks = await prisma.artwork.count({ where });
+
     const artworks = await prisma.artwork.findMany({
       where,
       skip: (Number(page) - 1) * pageSize,
       take: pageSize,
+      include: {
+        artistProductions: {
+          include: { artist: true },
+        },
+      },
     });
 
-    res.json([ artworks, totalArtworks ]);
+    res.json([artworks, totalArtworks]);
   } catch (error) {
     console.error('Error fetching artworks:', error);
     res.status(500).json({ error: 'Failed to fetch artworks.' });
