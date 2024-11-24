@@ -16,13 +16,13 @@ const router = Router();
 //  }
 //});
 
-// GET all artworks
+// GET a batch of artworks, filtered if provided
 router.get('/', async (req: Request, res: Response) => {
-  const { page = 1, search, artist } = req.query;
+  const { page = 1, search, artist, period } = req.query;
   const pageSize = 5;
 
   try {
-    
+   
     const where: Prisma.ArtworkWhereInput = {
       ...(search && {
         title: {
@@ -42,6 +42,14 @@ router.get('/', async (req: Request, res: Response) => {
           },
         },
       }),
+      ...(period && {
+        period: {
+          periodName: {
+            startsWith: period as string, 
+            mode: Prisma.QueryMode.insensitive,
+          },
+        },
+      }),
     };
 
     console.log('Generated where clause:', JSON.stringify(where, null, 2));
@@ -57,6 +65,7 @@ router.get('/', async (req: Request, res: Response) => {
         artistProductions: {
           include: { artist: true },
         },
+        period: true, 
       },
     });
 

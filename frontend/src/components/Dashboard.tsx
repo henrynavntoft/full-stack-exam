@@ -13,7 +13,7 @@ function Dashboard({ onLogout, user }: DashboardProps) {
   const navigate = useNavigate();
 
   const [searchQuery, setSearchQuery] = useState('');
-  const [period, setPeriod] = useState('all');
+  const [period, setPeriod] = useState('');
   const [artist, setArtist] = useState('');
 
   const handleLogout = () => {
@@ -23,7 +23,7 @@ function Dashboard({ onLogout, user }: DashboardProps) {
 
   const resetFilters = () => {
     setSearchQuery('');
-    setPeriod('all');
+    setPeriod('');
     setArtist('');
   };
 
@@ -73,10 +73,10 @@ function Dashboard({ onLogout, user }: DashboardProps) {
             value={period}
             onChange={(e) => setPeriod(e.target.value)}
             >
-              <option value="all">All</option>
-              <option value="renaissance">Renaissance</option>
-              <option value="baroque">Baroque</option>
-              <option value="romanticism">Romanticism</option>
+              <option value="">All</option>
+              <option value="15">1600's</option>
+              <option value="16">1700's</option>
+              <option value="17">1800's</option>
               </select>
             </div>
               <div className="w-full md:w-1/2 xl:w-1/3 px-4 mb-4">
@@ -101,7 +101,7 @@ function Dashboard({ onLogout, user }: DashboardProps) {
         {/* Display artworks */}
         <section>
           <h2 className="text-2xl font-bold text-primary mb-2">Artworks</h2>
-          <ArtworkList user={user} filters={{ searchQuery, artist }}
+          <ArtworkList user={user} filters={{ searchQuery, artist, period }}
  />
         </section>
 

@@ -4,13 +4,14 @@ import { Artwork } from '../types';
 
 // Fetch all artworks
 export const fetchArtworks = async (page = 1, filters = {}) => {
-  const { searchQuery, artist } = filters;
+  const { searchQuery, artist, period } = filters;
 
   
   const queryParams = new URLSearchParams({
     page: page.toString(),
     ...(searchQuery && { search: searchQuery }), 
     ...(artist && { artist }), 
+    ...(period && { period }), 
   }).toString();
 
   const response = await axiosInstance.get(`/api/artworks?${queryParams}`);
