@@ -6,6 +6,7 @@ import Dashboard from './components/Dashboard';
 import Header from './components/Header';
 import ArtworkList from './components/ArtworkList';
 import ArtworkDetails from './components/ArtworkDetails';
+import {fetchUserDetails} from './api/authApi';
 
 
 
@@ -17,31 +18,21 @@ function App() {
 
   
   useEffect(() => {
-    const fetchUserDetails = async () => {
+    const initializeAuth = async () => {
       try {
-        const response = await fetch('/api/auth/me', {
-          method: 'GET',
-          credentials: 'include', 
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          setUser(data); 
-          setIsAuthenticated(true);
-        } else {
-          setIsAuthenticated(false);
-          setUser(null);
-        }
+        const data = await fetchUserDetails(); 
+        setUser(data.user); 
+        setIsAuthenticated(true);
       } catch (error) {
         console.error('Error fetching user details:', error);
         setIsAuthenticated(false);
         setUser(null);
       } finally {
-        setLoading(false); 
+        setLoading(false);
       }
     };
 
-    fetchUserDetails();
+    initializeAuth(); 
   }, []);
 
 

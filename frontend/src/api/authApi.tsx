@@ -15,3 +15,11 @@ export const loginUser = async (loginData: LoginPayload): Promise<AuthResponse> 
   });
   return response.data;
 };
+
+export const fetchUserDetails = async (): Promise<AuthResponse> => {
+  const response = await axiosInstance.get('/api/auth/me', {
+    withCredentials: true,
+  });
+  return response.data;
+};
+

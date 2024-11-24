@@ -133,26 +133,4 @@ router.delete('/:id', authenticateToken, requireAdmin, async (req: Authenticated
   }
 });
 
-
-// get a user's data by checking the token
-router.get('/auth/me', authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
-
-  try {
-    // The middleware authenticateToken adds req.user
-    const user = await prisma.user.findUnique({
-      where: { id: req.user?.userId },
-      select: { id: true, name: true, email: true, role: true },
-    });
-
-    if (!user) {
-      return res.status(404).json({ error: 'User not found' });
-    }
-
-    res.json(user);
-  } catch (error) {
-    console.error('Error fetching user details:', error);
-    res.status(500).json({ error: 'Failed to fetch user details' });
-  }
-});
-
 export default router;
