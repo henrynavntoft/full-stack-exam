@@ -39,3 +39,11 @@ export const deleteLikeArtwork = async (id: number, userId) => {
   const response = await axiosInstance.delete(`/api/artworks/${id}/like`, { userId });
   return response.data;
 }
+
+// ADMIN FUNCTIONS
+
+// delete an artwork
+export const deleteArtwork = async (id: number) => {
+  const response = await axiosInstance.delete(`/api/artworks/${id}`);
+  return response.data;
+}

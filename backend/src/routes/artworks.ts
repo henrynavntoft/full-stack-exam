@@ -1,5 +1,7 @@
 import { Router, Request, Response } from 'express';
 import { PrismaClient, Prisma } from '@prisma/client';
+import { authenticateToken, AuthenticatedRequest } from '../middleware/authMiddleware';
+
 
 
 const prisma = new PrismaClient();
@@ -154,6 +156,52 @@ router.delete('/:id/like', async (req: Request, res: Response) => {
   } catch (error) {
     console.error('Error unliking artwork:', error);
     res.status(500).json({ error: 'Failed to unlike artwork.' });
+  }
+});
+
+
+// ADMIN FUNCTIONS
+
+// DELETE: Delete an artwork
+router.delete('/:id', authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
+  const { id } = req.params;
+
+  const isAdmin = req.user?.role === 'ADMIN';
+  if (!isAdmin) {
+    return res.status(403).json({ error: 'Unauthorized' });
+  }
+
+  try {
+    // Find users who have the artwork in their favorites
+    const usersWithFavorite = await prisma.user.findMany({
+      where: {
+        favoriteArtworks: {
+          some: { id: Number(id) },
+        },
+      },
+    });
+
+    // Disconnect the artwork from each user's favorites
+    for (const user of usersWithFavorite) {
+      await prisma.user.update({
+        where: { id: user.id },
+        data: {
+          favoriteArtworks: {
+            disconnect: { id: Number(id) },
+          },
+        },
+      });
+    }
+
+    // Delete the artwork
+    await prisma.artwork.delete({
+      where: { id: Number(id) },
+    });
+
+    res.status(200).json({ message: 'Artwork and related favorites deleted successfully.' });
+  } catch (error) {
+    console.error('Error deleting artwork:', error);
+    res.status(500).json({ error: 'Failed to delete artwork.' });
   }
 });
 

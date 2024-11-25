@@ -34,7 +34,7 @@ model Artwork {
 
   // Relations
   artistProductions Production[]
-  favoriteBy        User[]       @relation("UserFavorites")
+  favoriteBy        User[]       @relation("UserFavorites") 
 
   colors ArtworkColor[]
   period ProductionPeriod?
@@ -54,7 +54,7 @@ model Artist {
 
 model Production {
   id          Int     @id @default(autoincrement())
-  artwork     Artwork @relation(fields: [artworkId], references: [id])
+  artwork     Artwork @relation(fields: [artworkId], references: [id], onDelete: Cascade)
   artworkId   Int
   artist      Artist  @relation(fields: [artistId], references: [id])
   artistId    Int
@@ -67,13 +67,13 @@ model ProductionPeriod {
   endDate    DateTime
   periodName String?
 
-  artwork   Artwork? @relation(fields: [artworkId], references: [id])
+  artwork   Artwork? @relation(fields: [artworkId], references: [id], onDelete: Cascade)
   artworkId Int?     @unique
 }
 
 model ArtworkColor {
   id        Int     @id @default(autoincrement())
   color     String // Hex color code
-  artwork   Artwork @relation(fields: [artworkId], references: [id])
+  artwork   Artwork @relation(fields: [artworkId], references: [id], onDelete: Cascade)
   artworkId Int
 }

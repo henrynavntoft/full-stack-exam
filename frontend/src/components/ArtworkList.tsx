@@ -48,6 +48,11 @@ function ArtworkList({user, filters = { searchQuery: ''}}: ArtworkListProps) {
 
   const isAllFetched = art.length >= totalArtworks; 
 
+   // Callback to handle artwork deletion
+   const handleArtworkDelete = (deletedArtworkId: number) => {
+    setArt((prevArt) => prevArt.filter((artwork) => artwork.id !== deletedArtworkId));
+  };
+
 
   return (
     <div>
@@ -56,7 +61,12 @@ function ArtworkList({user, filters = { searchQuery: ''}}: ArtworkListProps) {
 
       <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 m-4">
         {art?.map((artwork) => (
-          <ArtworkCard key={artwork.id} artwork={artwork} user={user} />
+          <ArtworkCard 
+          key={artwork.id} 
+          artwork={artwork} 
+          user={user}
+          onDelete={handleArtworkDelete} // Pass the callback to ArtworkCard
+          />
         ))}
       </ul>
 
