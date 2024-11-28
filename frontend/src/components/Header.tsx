@@ -1,5 +1,5 @@
-// src/components/Header.tsx
 import { Link, useNavigate } from 'react-router-dom';
+import { logoutUser } from '../api/authApi'; // Adjust the path as needed
 
 interface HeaderProps {
   isAuthenticated: boolean;
@@ -9,9 +9,15 @@ interface HeaderProps {
 function Header({ isAuthenticated, onLogout }: HeaderProps) {
   const navigate = useNavigate();
 
-  const handleLogout = () => {
-    onLogout();
-    navigate('/login'); // Redirect to login page after logout
+   const handleLogout = async () => {
+    try {
+      await logoutUser(); // Call the API to logout
+      onLogout();         // Update state to reflect logout
+      navigate('/login'); // Redirect to login page after logout
+    } catch (error) {
+      console.error('Failed to logout:', error); // Log error for debugging
+      // Optionally, show an error message to the user
+    }
   };
 
   return (

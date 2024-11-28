@@ -80,13 +80,19 @@ router.post('/login', async (req: Request, res: Response) => {
 
 // delete the json web token when the user logs out
 router.post('/logout', (req: Request, res: Response) => {
+  try {
   res.clearCookie('token');
   res.status(200).json({ message: 'Logged out successfully' });
+  }
+  catch (error) {
+    console.error('Error:', error);
+    res.status(500).json({ error: 'Logout failed. Please try again.' });
+  }
 });
 
 
 // get a user's data by checking the token 
-router.get('/auth/me', authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
+router.get('/me', authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
 
   try {
     // The middleware authenticateToken adds req.user

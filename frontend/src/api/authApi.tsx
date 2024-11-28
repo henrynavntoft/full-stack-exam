@@ -23,3 +23,6 @@ export const fetchUserDetails = async (): Promise<AuthResponse> => {
   return response.data;
 };
 
+export const logoutUser = async () => {
+  await axiosInstance.post('/api/auth/logout', {}, { withCredentials: true });
+};
