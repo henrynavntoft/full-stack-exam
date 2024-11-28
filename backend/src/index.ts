@@ -19,17 +19,17 @@ dotenv.config({ path: './.env' });
 const app: Express = express();
 
 // set up rate limit with express-rate-limit
-const limiter = rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 minutes in milliseconds
-    max: 100, // Limit each IP to 100 requests per windowMs
-    handler: (req, res) => {
-      res.status(429).json({
-        error: 'Too many requests, please try again later.',
-      });
-    },
-  });
+// const limiter = rateLimit({
+//     windowMs: 15 * 60 * 1000, // 15 minutes in milliseconds
+//     max: 100, // Limit each IP to 100 requests per windowMs
+//     handler: (req, res) => {
+//       res.status(429).json({
+//         error: 'Too many requests, please try again later.',
+//       });
+//     },
+//   });
 
-app.use(limiter);
+// app.use(limiter);
 
 app.use(helmet());
 

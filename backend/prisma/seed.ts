@@ -1,6 +1,7 @@
 import { PrismaClient, UserRole } from '@prisma/client';
 import axios from 'axios';
 import bcrypt from 'bcryptjs';
+import https from 'https'; 
 
 const prisma = new PrismaClient();
 
@@ -24,7 +25,6 @@ interface ArtworkItem {
 }
 
 async function main() {
-
   // 1. Create an Admin User with a hashed password
   const hashedPassword = await bcrypt.hash('Securepassword12323!', 10);
   await prisma.user.create({
@@ -36,9 +36,16 @@ async function main() {
     },
   });
 
-  // 2. Fetch Artwork Data from SMK API
+  // 2. Fetch Artwork Data from SMK API with SSL bypass
   const smkApiUrl = 'https://api.smk.dk/api/v1/art/search/?keys=*&filters=[has_image:true]&offset=0&rows=50';
-  const response = await axios.get<{ items: ArtworkItem[] }>(smkApiUrl);
+
+  const httpsAgent = new https.Agent({
+    rejectUnauthorized: false, // Bypass SSL certificate validation
+  });
+
+  const response = await axios.get<{ items: ArtworkItem[] }>(smkApiUrl, {
+  httpsAgent, // Add the agent
+} as any); // Type assertion here to avoid TypeScript error
   const artworks = response.data.items;
 
   // 3. Insert Artworks and Artists into Database

@@ -12,6 +12,9 @@ interface DashboardProps {
 function Dashboard({ onLogout, user }: DashboardProps) {
   const navigate = useNavigate();
 
+  
+  console.log(user);
+
   const [searchQuery, setSearchQuery] = useState('');
   const [period, setPeriod] = useState('');
   const [artist, setArtist] = useState('');
@@ -27,7 +30,12 @@ function Dashboard({ onLogout, user }: DashboardProps) {
     setArtist('');
   };
 
+   if (!user) {
+    return <div>Loading user information...</div>; // Handle undefined user gracefully
+  }
+
   return (
+    
     <div className="flex items-center justify-center min-h-screen bg-background">
       <div className="p-6 max-w-4xl w-full bg-card shadow-md rounded-lg">
         <section className="p-4 mb-6 border-b border-border">

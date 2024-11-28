@@ -16,11 +16,22 @@ export const loginUser = async (loginData: LoginPayload): Promise<AuthResponse> 
   return response.data;
 };
 
-export const fetchUserDetails = async (): Promise<AuthResponse> => {
-  const response = await axiosInstance.get('/api/auth/me', {
-    withCredentials: true,
-  });
-  return response.data;
+export const fetchUserDetails = async (): Promise<AuthResponse | null> => {
+  try {
+    const response = await axiosInstance.get<AuthResponse>('/api/auth/me', {
+      withCredentials: true,
+    });
+    return response.data;
+  } catch (error) {
+    const axiosError = error as import('axios').AxiosError;
+    if (axiosError.response?.status === 401) {
+      // Gracefully handle unauthorized response
+      console.warn('User is not logged in');
+      return null; // Return null when unauthorized
+    }
+    console.error('Error fetching user details:', axiosError.message);
+    throw error; // Rethrow other errors
+  }
 };
 
 export const logoutUser = async () => {

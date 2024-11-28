@@ -6,7 +6,7 @@ import Dashboard from './components/Dashboard';
 import Header from './components/Header';
 import ArtworkList from './components/ArtworkList';
 import ArtworkDetails from './components/ArtworkDetails';
-import {fetchUserDetails} from './api/authApi';
+import {fetchUserDetails, logoutUser} from './api/authApi';
 
 
 
@@ -17,23 +17,29 @@ function App() {
   const [loading, setLoading] = useState(true); 
 
   
-  useEffect(() => {
-    const initializeAuth = async () => {
-      try {
-        const data = await fetchUserDetails(); 
-        setUser(data.user); 
+useEffect(() => {
+  const initializeAuth = async () => {
+    try {
+      const data = await fetchUserDetails();
+      console.log('Fetched user details:', data);
+      if (data) { 
+        setUser(data.user);
         setIsAuthenticated(true);
-      } catch (error) {
-        console.error('Error fetching user details:', error);
+      } else {
         setIsAuthenticated(false);
         setUser(null);
-      } finally {
-        setLoading(false);
       }
-    };
+    } catch (error) {
+      console.error('Error initializing authentication:', error);
+      setIsAuthenticated(false);
+      setUser(null);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    initializeAuth(); 
-  }, []);
+  initializeAuth();
+}, []);
 
 
   const handleLogin = (loggedInUser: { id: number; name: string; email: string; role: string }) => {
@@ -41,11 +47,11 @@ function App() {
     setUser(loggedInUser);
   };
 
-  const handleLogout = async () => {
+ const handleLogout = async () => {
     try {
-      await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' });
+      await logoutUser(); // Use logoutUser from authApi
       setIsAuthenticated(false);
-      setUser(null);
+      setUser(null); // Clear the user state
     } catch (error) {
       console.error('Error during logout:', error);
     }
@@ -64,16 +70,21 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<LoginForm onLogin={handleLogin} />} />
         <Route path="/signup" element={<CreateUserForm />} />
-        <Route
-          path="/dashboard"
-          element={
-            isAuthenticated ? (
-              <Dashboard onLogout={handleLogout} user={user} />
-            ) : (
-              <Navigate to="/login" />
-            )
-          }
-        />
+<Route
+  path="/dashboard"
+  element={
+    loading ? (
+      <div>Loading...</div>
+    ) : isAuthenticated ? (
+      <>
+        {console.log('Passing user to Dashboard:', user)}
+        <Dashboard onLogout={handleLogout} user={user} />
+      </>
+    ) : (
+      <Navigate to="/login" />
+    )
+  }
+/>
         <Route path="/artworks/:id" element={<ArtworkDetails />} /> {/* Dynamic Route */}
       </Routes>
     </Router>
