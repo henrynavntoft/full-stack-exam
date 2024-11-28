@@ -28,4 +28,23 @@ axiosInstance.interceptors.response.use(
   }
 );
 
+axiosInstance.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    if (error.response && error.response.status === 401) {
+      try {
+        // Attempt to refresh the token
+        await axiosInstance.post('/api/auth/refresh-token', {}, { withCredentials: true });
+
+        // Retry the original request
+        return axiosInstance.request(error.config);
+      } catch (refreshError) {
+        console.error('Token refresh failed:', refreshError);
+        return Promise.reject(refreshError);
+      }
+    }
+    return Promise.reject(error);
+  }
+);
+
 export default axiosInstance;

@@ -4,97 +4,85 @@ import CreateUserForm from './components/CreateUserForm';
 import LoginForm from './components/LoginForm';
 import Dashboard from './components/Dashboard';
 import Header from './components/Header';
-import ArtworkList from './components/ArtworkList';
 import ArtworkDetails from './components/ArtworkDetails';
-import {fetchUserDetails, logoutUser} from './api/authApi';
-
-
+import Home from './components/Home';
+import { fetchUserDetails, logoutUser } from './api/authApi';
 
 function App() {
-
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState<{ id: number; name: string; email: string; role: string } | null>(null);
-  const [loading, setLoading] = useState(true); 
+  const [filters] = useState({ searchQuery: '', artist: '', period: '' }); 
+  const [loading, setLoading] = useState(true); // Track loading state
 
-  
+
 useEffect(() => {
   const initializeAuth = async () => {
     try {
-      const data = await fetchUserDetails();
-      console.log('Fetched user details:', data);
-      if (data) { 
-        setUser(data.user);
+      const data = await fetchUserDetails(); 
+      if (data) {
+        console.log('User fetched successfully:', data.user);
+        setUser(data.user); // Update user state
         setIsAuthenticated(true);
       } else {
-        setIsAuthenticated(false);
+        console.log('No user found, logging out.');
         setUser(null);
+        setIsAuthenticated(false);
       }
     } catch (error) {
       console.error('Error initializing authentication:', error);
-      setIsAuthenticated(false);
       setUser(null);
-    } finally {
-      setLoading(false);
-    }
+      setIsAuthenticated(false);
+    }finally {
+        setLoading(false); // End loading
+      }
   };
 
   initializeAuth();
 }, []);
-
 
   const handleLogin = (loggedInUser: { id: number; name: string; email: string; role: string }) => {
     setIsAuthenticated(true);
     setUser(loggedInUser);
   };
 
- const handleLogout = async () => {
+  const handleLogout = async () => {
     try {
-      await logoutUser(); // Use logoutUser from authApi
+      await logoutUser();
       setIsAuthenticated(false);
-      setUser(null); // Clear the user state
+      setUser(null);
     } catch (error) {
       console.error('Error during logout:', error);
     }
   };
 
   if (loading) {
-    return <div>Loading...</div>; 
+    return <div>Loading...</div>; // Prevent redirect until loading is complete
   }
 
   return (
     <Router>
-      {/* Header is rendered on all pages */}
       <Header isAuthenticated={isAuthenticated} onLogout={handleLogout} />
-
       <Routes>
-        <Route path="/" element={<Home />} />
+        <Route 
+          path="/" 
+          element={<Home user={user} filters={filters} />} 
+        />
         <Route path="/login" element={<LoginForm onLogin={handleLogin} />} />
         <Route path="/signup" element={<CreateUserForm />} />
-<Route
-  path="/dashboard"
-  element={
-    loading ? (
-      <div>Loading...</div>
-    ) : isAuthenticated ? (
-      <>
-        {console.log('Passing user to Dashboard:', user)}
-        <Dashboard onLogout={handleLogout} user={user} />
-      </>
-    ) : (
-      <Navigate to="/login" />
-    )
-  }
-/>
-        <Route path="/artworks/:id" element={<ArtworkDetails />} /> {/* Dynamic Route */}
+        <Route
+          path="/dashboard"
+          element={
+            isAuthenticated ? (
+              <Dashboard onLogout={handleLogout} user={user} />
+            ) : (
+              <Navigate to="/login" />
+            )
+          }
+        />
+        <Route path="/artworks/:id" element={<ArtworkDetails />} />
       </Routes>
     </Router>
   );
 }
-
-const Home = () => (
- <>
-    <ArtworkList />
-</>
-);
 
 export default App;

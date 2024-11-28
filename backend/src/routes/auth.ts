@@ -61,7 +61,7 @@ router.post('/login', async (req: Request, res: Response) => {
       httpOnly: true,      // now javascript cannot access it
       secure: process.env.NODE_ENV === 'production', // rely on https when in production
       maxAge: 3600000,     // 1 hour
-      sameSite: 'strict',  // change to lax if we want cross-site cookie usage
+      sameSite: 'lax',  // change to lax if we want cross-site cookie usage
     });
     
     res.json({
@@ -91,26 +91,28 @@ router.post('/logout', (req: Request, res: Response) => {
 });
 
 
-// get a user's data by checking the token 
 router.get('/me', authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
+  console.log('Decoded user from token:', req.user);
 
   try {
-    // The middleware authenticateToken adds req.user
     const user = await prisma.user.findUnique({
       where: { id: req.user?.userId },
       select: { id: true, name: true, email: true, role: true },
     });
 
     if (!user) {
+      console.error('User not found for ID:', req.user?.userId);
       return res.status(404).json({ error: 'User not found' });
     }
 
-    res.json(user);
+    console.log('User fetched successfully:', user);
+    res.json({user});
   } catch (error) {
     console.error('Error fetching user details:', error);
     res.status(500).json({ error: 'Failed to fetch user details' });
   }
 });
+
 
 
 export default router;
