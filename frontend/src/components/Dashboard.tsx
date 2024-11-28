@@ -58,8 +58,9 @@ function Dashboard({ onLogout, user }: DashboardProps) {
           <label className="block mb-2 text-sm text-muted-foreground">Search</label>
 
           <input 
-          className="block w-full px-4 py-2 text-sm text-muted-foreground bg-white border border-border rounded-lg focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary" type="text" placeholder="Search by title" name="search" 
-          type="text"
+          className="block w-full px-4 py-2 text-sm text-muted-foreground bg-white border border-border rounded-lg focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary" 
+          type="text" 
+          name="search" 
           placeholder="Title, period.."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}          

@@ -3,15 +3,19 @@ import { useQuery } from '@tanstack/react-query';
 import { fetchArtworks } from '../api/artworksApi';
 import ArtworkCard from './ArtworkCard';
 import { useState, useEffect } from 'react';
+import { Artwork } from '../types';
+
+
 
 interface ArtworkListProps {
   user: { id: number; name: string; email: string; role: string } | null;
   filters: { searchQuery: string, artist: string, period: string };
 }
 
-function ArtworkList({user, filters = { searchQuery: ''}}: ArtworkListProps) {
+function ArtworkList({user, filters = { searchQuery: '', artist: '', period: '' }}: ArtworkListProps) {
   const [page, setPage] = useState(1);
-  const [art, setArt] = useState([]);
+  
+  const [art, setArt] = useState<Artwork[]>([]);
   const [totalArtworks, setTotalArtworks] = useState(0);
 
   const {searchQuery, artist, period} = filters;
@@ -26,7 +30,7 @@ function ArtworkList({user, filters = { searchQuery: ''}}: ArtworkListProps) {
   } = useQuery({
     queryKey: ['artworks', page, filters.searchQuery, filters.artist, filters.period],
     queryFn: () => fetchArtworks(page, filters),
-    keepPreviousData: true,
+    staleTime: 5000,
   });
 
   useEffect(() => {

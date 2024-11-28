@@ -3,7 +3,13 @@ import axiosInstance from './axiosInstance';
 import { Artwork } from '../types';
 
 // Fetch all artworks
-export const fetchArtworks = async (page = 1, filters = {}) => {
+interface Filters {
+  searchQuery?: string;
+  artist?: string;
+  period?: string;
+}
+
+export const fetchArtworks = async (page = 1, filters: Filters = {}) => {
   const { searchQuery, artist, period } = filters;
 
   
@@ -28,17 +34,32 @@ export const fetchArtwork = async (id: number): Promise<Artwork> => {
   return response.data;
 };
 
-// Like
-export const likeArtwork = async (id: number, userId) => {
-  const response = await axiosInstance.post(`/api/artworks/${id}/like`, { userId });
-  return response.data;
-}
+// Like an artwork
+export const likeArtwork = async (id: number, userId: number): Promise<{ success: boolean }> => {
+  try {
+    const response = await axiosInstance.post<{ success: boolean }>(`/api/artworks/${id}/like`, {
+      userId,
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Failed to like artwork:', error);
+    throw error;
+  }
+};
 
-// Unlike
-export const deleteLikeArtwork = async (id: number, userId) => {
-  const response = await axiosInstance.delete(`/api/artworks/${id}/like`, { userId });
-  return response.data;
-}
+// Unlike an artwork
+export const deleteLikeArtwork = async (id: number, userId: number): Promise<{ success: boolean }> => {
+  try {
+    const queryParams = new URLSearchParams({ userId: userId.toString() }).toString();
+    const response = await axiosInstance.delete<{ success: boolean }>(
+      `/api/artworks/${id}/like?${queryParams}`
+    );
+    return response.data;
+  } catch (error) {
+    console.error('Failed to unlike artwork:', error);
+    throw error;
+  }
+};
 
 // ADMIN FUNCTIONS
 
