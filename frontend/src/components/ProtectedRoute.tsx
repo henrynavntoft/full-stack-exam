@@ -10,7 +10,7 @@ function ProtectedRoute({ children }: ProtectedRouteProps) {
   const { isAuthenticated, loading } = useAuth();
 
   if (loading) {
-    return <Loading />; // Show loading spinner while checking authentication
+    return <Loading />; 
   }
 
   return isAuthenticated ? children : <Navigate to="/login" />;
