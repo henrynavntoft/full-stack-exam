@@ -92,21 +92,26 @@ router.post('/logout', (req: Request, res: Response) => {
 
 
 router.get('/me', authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
+  if (!req.user) {
+    // Respond as guest for unauthenticated users
+    return res.status(200).json(null);
+  }
+
   console.log('Decoded user from token:', req.user);
 
   try {
     const user = await prisma.user.findUnique({
-      where: { id: req.user?.userId },
+      where: { id: req.user.userId },
       select: { id: true, name: true, email: true, role: true },
     });
 
     if (!user) {
-      console.error('User not found for ID:', req.user?.userId);
+      console.error('User not found for ID:', req.user.userId);
       return res.status(404).json({ error: 'User not found' });
     }
 
     console.log('User fetched successfully:', user);
-    res.json({user});
+    res.json({ user });
   } catch (error) {
     console.error('Error fetching user details:', error);
     res.status(500).json({ error: 'Failed to fetch user details' });

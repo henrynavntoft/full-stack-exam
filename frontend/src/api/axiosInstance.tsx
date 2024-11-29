@@ -12,7 +12,7 @@ const axiosInstance = axios.create({
 // Add interceptors if needed
 axiosInstance.interceptors.request.use(
   (config) => {
-    // Remove token handling since cookies are used
+    // Cookies handle authentication, so no token handling needed
     return config;
   },
   (error) => Promise.reject(error)
@@ -24,24 +24,9 @@ axiosInstance.interceptors.response.use(
     if (error.response && error.response.status === 403) {
       alert("You don't have permission to access this resource.");
     }
-    return Promise.reject(error);
-  }
-);
-
-axiosInstance.interceptors.response.use(
-  (response) => response,
-  async (error) => {
     if (error.response && error.response.status === 401) {
-      try {
-        // Attempt to refresh the token
-        await axiosInstance.post('/api/auth/refresh-token', {}, { withCredentials: true });
-
-        // Retry the original request
-        return axiosInstance.request(error.config);
-      } catch (refreshError) {
-        console.error('Token refresh failed:', refreshError);
-        return Promise.reject(refreshError);
-      }
+      console.warn('Unauthorized: Please log in again.');
+      // Optionally, redirect to login or handle logout here
     }
     return Promise.reject(error);
   }

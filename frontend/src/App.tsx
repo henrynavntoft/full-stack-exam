@@ -20,11 +20,9 @@ useEffect(() => {
     try {
       const data = await fetchUserDetails(); 
       if (data) {
-        console.log('User fetched successfully:', data.user);
         setUser(data.user); // Update user state
         setIsAuthenticated(true);
       } else {
-        console.log('No user found, logging out.');
         setUser(null);
         setIsAuthenticated(false);
       }

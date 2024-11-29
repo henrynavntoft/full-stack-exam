@@ -1,6 +1,7 @@
 import { Router, Request, Response } from 'express';
 import { PrismaClient, Prisma } from '@prisma/client';
 import { authenticateToken, AuthenticatedRequest } from '../middleware/authMiddleware';
+import jwt from 'jsonwebtoken';
 
 
 
@@ -19,12 +20,13 @@ const router = Router();
 //});
 
 // GET a batch of artworks, filtered if provided
+// GET a batch of artworks, filtered if provided
 router.get('/', authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
   const { page = 1, search, artist, period } = req.query;
   const pageSize = 5;
 
   try {
-    const userId = req.user?.userId; // Get logged-in user's ID from token
+    const userId = req.user?.userId || null; // Use userId if authenticated, otherwise null
 
     const where: Prisma.ArtworkWhereInput = {
       ...(search && {
@@ -66,16 +68,13 @@ router.get('/', authenticateToken, async (req: AuthenticatedRequest, res: Respon
           include: { artist: true },
         },
         period: true,
-        favoriteBy: {
-          where: { id: userId }, // Check if the logged-in user has liked this artwork
-        },
+        favoriteBy: userId ? { where: { id: userId } } : false, // Fetch favoriteBy only if userId exists
       },
     });
 
-    // Add the likedByUser flag for each artwork
     const enrichedArtworks = artworks.map((artwork) => ({
       ...artwork,
-      likedByUser: artwork.favoriteBy.length > 0, // True if the user has liked the artwork
+      likedByUser: userId ? artwork.favoriteBy.length > 0 : false,
     }));
 
     res.json({ artworks: enrichedArtworks, totalArtworks });

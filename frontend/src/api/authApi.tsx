@@ -21,16 +21,15 @@ export const fetchUserDetails = async (): Promise<AuthResponse | null> => {
     const response = await axiosInstance.get<AuthResponse>('/api/auth/me', {
       withCredentials: true,
     });
-    console.log('Raw /me response:', response.data); // Log the response
-    return response.data; // Ensure this contains the `user` object
+    return response.data; // Return the user object if authenticated
   } catch (error) {
     const axiosError = error as import('axios').AxiosError;
     if (axiosError.response?.status === 401) {
-      console.warn('User is not logged in');
-      return null;
+      // Gracefully handle unauthenticated users as guests
+      return null; // Return `null` for guest users
     }
     console.error('Error fetching user details:', axiosError.message);
-    throw error;
+    throw error; // Rethrow other unexpected errors
   }
 };
 
