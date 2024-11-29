@@ -58,11 +58,11 @@ router.post('/login', async (req: Request, res: Response) => {
 
     // insert jwt token into a cookie to make it more secure
     res.cookie('token', token, {
-      httpOnly: true,      // now javascript cannot access it
-      secure: process.env.NODE_ENV === 'production', // rely on https when in production
-      maxAge: 3600000,     // 1 hour
-      sameSite: 'lax',  // change to lax if we want cross-site cookie usage
-    });
+  httpOnly: true, // Prevent JavaScript access
+  secure: process.env.NODE_ENV === 'production', // Use secure cookies in production
+  maxAge: 3600000, // 1 hour
+  sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax', // Allow cross-origin in production
+});
     
     res.json({
       user: {
