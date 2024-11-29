@@ -22,7 +22,7 @@ EXPOSE 3000
 
 # Explicitly set DATABASE_URL during migration and start the application
 # To wipe the database and seed it freshly, use:
-CMD ["sh", "-c", "npx prisma migrate reset --force && npm run dev"]
+#CMD ["sh", "-c", "npx prisma migrate reset --force && npm run dev"]
 
 # To deploy the migrations and start the application, use:
-# CMD ["sh", "-c", "npx prisma migrate deploy && npm run dev"]
+CMD ["sh", "-c", "npx prisma migrate deploy && npm run dev && npx prisma studio"]
