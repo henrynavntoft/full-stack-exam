@@ -1,25 +1,11 @@
 import { Router, Request, Response } from 'express';
 import { PrismaClient, Prisma } from '@prisma/client';
 import { authenticateToken, AuthenticatedRequest } from '../middleware/authMiddleware';
-import jwt from 'jsonwebtoken';
-
-
+import { requireAdmin } from '../middleware/adminMiddleware';
 
 const prisma = new PrismaClient();
 const router = Router();
 
-// GET all artworks
-//router.get('/', async (req: Request, res: Response) => {
-//  try {
-//    const artworks = await prisma.artwork.findMany();
-//    res.json(artworks);
-//  } catch (error) {
-//    console.error("Error fetching artworks:", error);
-//    res.status(500).json({ error: "Failed to fetch artworks." });
-//  }
-//});
-
-// GET a batch of artworks, filtered if provided
 // GET a batch of artworks, filtered if provided
 router.get('/', authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
   const { page = 1, search, artist, period } = req.query;
@@ -166,19 +152,24 @@ router.delete('/:id/like', authenticateToken, async (req: AuthenticatedRequest, 
 });
 
 
-// ADMIN FUNCTIONS
 
-// DELETE: Delete an artwork
-router.delete('/:id', authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
+// DELETE: Delete an artwork (Admin only)
+router.delete('/:id', authenticateToken, requireAdmin, async (req: AuthenticatedRequest, res: Response) => {
   const { id } = req.params;
 
-  const isAdmin = req.user?.role === 'ADMIN';
-  if (!isAdmin) {
-    return res.status(403).json({ error: 'Unauthorized' });
-  }
-
   try {
-    // Find users who have the artwork in their favorites
+    console.log(`Admin ${req.user?.userId} attempting to delete artwork with ID: ${id}`);
+
+    // Check if the artwork exists
+    const artwork = await prisma.artwork.findUnique({
+      where: { id: Number(id) },
+    });
+    if (!artwork) {
+      console.warn(`Artwork with ID: ${id} not found`);
+      return res.status(404).json({ error: 'Artwork not found' });
+    }
+
+    // Find users who have this artwork in their favorites
     const usersWithFavorite = await prisma.user.findMany({
       where: {
         favoriteArtworks: {
@@ -187,8 +178,11 @@ router.delete('/:id', authenticateToken, async (req: AuthenticatedRequest, res: 
       },
     });
 
-    // Disconnect the artwork from each user's favorites
+    console.log(`Found ${usersWithFavorite.length} users with this artwork in favorites.`);
+
+    // Disconnect the artwork from users' favorites
     for (const user of usersWithFavorite) {
+      console.log(`Disconnecting artwork from user ${user.id}`);
       await prisma.user.update({
         where: { id: user.id },
         data: {
@@ -204,6 +198,7 @@ router.delete('/:id', authenticateToken, async (req: AuthenticatedRequest, res: 
       where: { id: Number(id) },
     });
 
+    console.log(`Artwork with ID: ${id} deleted successfully`);
     res.status(200).json({ message: 'Artwork and related favorites deleted successfully.' });
   } catch (error) {
     console.error('Error deleting artwork:', error);

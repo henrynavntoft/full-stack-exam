@@ -32,12 +32,20 @@ model Artwork {
   createdAt   DateTime @default(now())
   imageUrl    String?
 
-  // Relations
   artistProductions Production[]
-  favoriteBy        User[]       @relation("UserFavorites") 
+  favoriteBy        User[]            @relation("UserFavorites")
+  colors            ArtworkColor[]
+  period            ProductionPeriod?
+}
 
-  colors ArtworkColor[]
-  period ProductionPeriod?
+model ProductionPeriod {
+  id         Int      @id @default(autoincrement())
+  startDate  DateTime
+  endDate    DateTime
+  periodName String?
+
+  artwork   Artwork? @relation(fields: [artworkId], references: [id], onDelete: Cascade) // Specify onDelete here
+  artworkId Int?     @unique
 }
 
 model Artist {
@@ -56,24 +64,14 @@ model Production {
   id          Int     @id @default(autoincrement())
   artwork     Artwork @relation(fields: [artworkId], references: [id], onDelete: Cascade)
   artworkId   Int
-  artist      Artist  @relation(fields: [artistId], references: [id])
+  artist      Artist  @relation(fields: [artistId], references: [id], onDelete: Cascade) // Specify onDelete here
   artistId    Int
-  creatorRole String? // Role in the creation (e.g., "Efter")
-}
-
-model ProductionPeriod {
-  id         Int      @id @default(autoincrement())
-  startDate  DateTime
-  endDate    DateTime
-  periodName String?
-
-  artwork   Artwork? @relation(fields: [artworkId], references: [id], onDelete: Cascade)
-  artworkId Int?     @unique
+  creatorRole String?
 }
 
 model ArtworkColor {
   id        Int     @id @default(autoincrement())
   color     String // Hex color code
-  artwork   Artwork @relation(fields: [artworkId], references: [id], onDelete: Cascade)
+  artwork   Artwork @relation(fields: [artworkId], references: [id], onDelete: Cascade) // Delete color if artwork is deleted
   artworkId Int
 }

@@ -63,8 +63,13 @@ export const deleteLikeArtwork = async (id: number, userId: number): Promise<{ s
 
 // ADMIN FUNCTIONS
 
-// delete an artwork
+// Delete an artwork (admin only)
 export const deleteArtwork = async (id: number) => {
-  const response = await axiosInstance.delete(`/api/artworks/${id}`);
-  return response.data;
-}
+  try {
+    const response = await axiosInstance.delete(`/api/artworks/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error('Failed to delete artwork:', error);
+    throw error;
+  }
+};
