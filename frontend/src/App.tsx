@@ -1,84 +1,40 @@
-import { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
-import CreateUserForm from './components/CreateUserForm';
-import LoginForm from './components/LoginForm';
-import Dashboard from './components/Dashboard';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { AuthProvider } from './context/AuthContext'; 
+import ProtectedRoute from './components/ProtectedRoute';
 import Header from './components/Header';
-import ArtworkDetails from './components/ArtworkDetails';
-import Home from './components/Home';
-import { fetchUserDetails, logoutUser } from './api/authApi';
+
+// Pages
+import Home from './pages/Home';
+import Dashboard from './pages/Dashboard';
+import LoginForm from './pages/LoginForm';
+import CreateUserForm from './pages/CreateUserForm';
+import ArtworkDetails from './pages/ArtworkDetails';
 
 function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [user, setUser] = useState<{ id: number; name: string; email: string; role: string } | null>(null);
-  const [loading, setLoading] = useState(true); // Track loading state
-
-
-useEffect(() => {
-  const initializeAuth = async () => {
-    try {
-      const data = await fetchUserDetails(); 
-      if (data) {
-        setUser(data.user); // Update user state
-        setIsAuthenticated(true);
-      } else {
-        setUser(null);
-        setIsAuthenticated(false);
-      }
-    } catch (error) {
-      console.error('Error initializing authentication:', error);
-      setUser(null);
-      setIsAuthenticated(false);
-    }finally {
-        setLoading(false); // End loading
-      }
-  };
-
-  initializeAuth();
-}, []);
-
-  const handleLogin = (loggedInUser: { id: number; name: string; email: string; role: string }) => {
-    setIsAuthenticated(true);
-    setUser(loggedInUser);
-  };
-
-  const handleLogout = async () => {
-    try {
-      await logoutUser();
-      setIsAuthenticated(false);
-      setUser(null);
-    } catch (error) {
-      console.error('Error during logout:', error);
-    }
-  };
-
-  if (loading) {
-    return <div>Loading...</div>; // Prevent redirect until loading is complete
-  }
 
   return (
+    <AuthProvider>
     <Router>
-      <Header isAuthenticated={isAuthenticated} onLogout={handleLogout} />
+      <Header />
       <Routes>
-        <Route 
-          path="/" 
-          element={<Home user={user} />} 
-        />
-        <Route path="/login" element={<LoginForm onLogin={handleLogin} />} />
+        {/* Public Routes */}
+        <Route path="/" element={<Home/>} />
+        <Route path="/login" element={<LoginForm />} />
         <Route path="/signup" element={<CreateUserForm />} />
+        <Route path="/artworks/:id" element={<ArtworkDetails />} />
+
+        {/* Protected Routes */}
         <Route
           path="/dashboard"
           element={
-            isAuthenticated ? (
-              <Dashboard onLogout={handleLogout} user={user} />
-            ) : (
-              <Navigate to="/login" />
-            )
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
           }
         />
-        <Route path="/artworks/:id" element={<ArtworkDetails />} />
       </Routes>
     </Router>
+    </AuthProvider>
   );
 }
 

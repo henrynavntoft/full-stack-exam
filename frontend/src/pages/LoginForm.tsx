@@ -2,23 +2,21 @@ import React, { useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { loginUser } from '../api/authApi';
 import { useNavigate } from 'react-router-dom';
+import  useAuth  from '../context/useAuth';
 
-interface LoginFormProps {
-  onLogin: (user: { id: number; name: string; email: string; role: string }) => void;
-}
-
-function LoginForm({ onLogin }: LoginFormProps) {
+function LoginForm() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false); // State to toggle password visibility
   const [error, setError] = useState<string | null>(null);
   const [validationErrors, setValidationErrors] = useState<{ email?: string; password?: string }>({});
   const navigate = useNavigate();
+  const { login } = useAuth(); // Get login function from AuthContext
 
   const mutation = useMutation({
     mutationFn: loginUser,
     onSuccess: (data) => {
-      onLogin(data.user); // Pass user data to the onLogin callback
+      login(data.user); // Call login from AuthContext with the logged-in user
       navigate('/dashboard');
     },
     onError: () => {
@@ -43,7 +41,8 @@ function LoginForm({ onLogin }: LoginFormProps) {
     if (!password.trim()) {
       errors.password = 'Password is required';
     } else if (!passwordPattern.test(password)) {
-      errors.password = 'Password must be at least 8 characters long, include uppercase, lowercase, digit, and special character.';
+      errors.password =
+        'Password must be at least 8 characters long, include uppercase, lowercase, digit, and special character.';
     }
 
     setValidationErrors(errors);

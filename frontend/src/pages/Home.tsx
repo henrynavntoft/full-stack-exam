@@ -1,8 +1,10 @@
 import { useState } from 'react';
-import ArtworkList from './ArtworkList';
-import Filters from './Filters';
+import  useAuth  from '../context/useAuth'; 
+import ArtworkList from '../components/ArtworkList';
+import Filters from '../components/Filters';
 
-function Home({ user }: { user: { id: number; name: string; email: string; role: string } | null }) {
+function Home() {
+  const { user } = useAuth(); // Access user directly from AuthContext
   const [filters, setFilters] = useState({ searchQuery: '', artist: '', period: '' });
 
   const handleFilterChange = (updatedFilters: { searchQuery: string; artist: string; period: string }) => {

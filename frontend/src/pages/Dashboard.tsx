@@ -1,22 +1,23 @@
 import { useNavigate } from 'react-router-dom';
-import UserList from './UserList';
-import ArtworkList from './ArtworkList';
-import Filters from './Filters'; // Import the new Filters component
+import UserList from '../components/UserList';
+import ArtworkList from '../components/ArtworkList';
+import Filters from '../components/Filters'; // Import the Filters component
 import { useState } from 'react';
+import  useAuth  from '../context/useAuth'; // Import useAuth to access user and logout
 
-interface DashboardProps {
-  onLogout: () => void;
-  user: { id: number; name: string; email: string; role: string } | null;
-}
-
-function Dashboard({ onLogout, user }: DashboardProps) {
+function Dashboard() {
   const navigate = useNavigate();
+  const { user, logout } = useAuth(); // Access user and logout function from AuthContext
 
   const [filters, setFilters] = useState({ searchQuery: '', artist: '', period: '' });
 
-  const handleLogout = () => {
-    onLogout();
-    navigate('/login');
+  const handleLogout = async () => {
+    try {
+      await logout(); // Call logout from AuthContext
+      navigate('/login'); // Redirect to login page after logout
+    } catch (error) {
+      console.error('Failed to log out:', error);
+    }
   };
 
   const handleFilterChange = (updatedFilters: { searchQuery: string; artist: string; period: string }) => {
