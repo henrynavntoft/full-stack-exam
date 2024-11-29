@@ -70,7 +70,7 @@ function CreateUserForm() {
         return;
     }
 
-    const passwordPattern = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=_]).{8,}$/;
+    const passwordPattern = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$!%-^&+=_]).{8,}$/;
     if (!passwordPattern.test(formData.password)) {
         setError(
             "Password must be at least 8 characters long, include uppercase, lowercase, digit, and special character."

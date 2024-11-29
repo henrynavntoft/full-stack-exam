@@ -35,14 +35,24 @@ router.get('/:id', authenticateToken, requireAdmin, async (req: AuthenticatedReq
   }
 });
 
-// POST to create a new user with password hashing (Admin only)
+// DELETE a user by ID (Admin only)
+router.delete('/:id', authenticateToken, requireAdmin, async (req: AuthenticatedRequest, res: Response) => {
+  const { id } = req.params;
+  try {
+    await prisma.user.delete({
+      where: { id: parseInt(id) },
+    });
+    res.status(204).send();
+  } catch (error) {
+    console.error("Error deleting user:", error);
+    res.status(500).json({ error: "Failed to delete user." });
+  }
+});
+
+
+// POST to create a new user
 router.post('/', async (req: AuthenticatedRequest, res: Response) => {
   const { name, email, password, confirmPassword } = req.body;
-
-  // Check if the authenticated user is an admin (?)
-  // if (req.user.role !== 'admin') {
-  //  return res.status(403).json({ error: "You do not have permission to create users." });
-  // }
 
   // Input validation
   if (!name || !email || !password || !confirmPassword) {
@@ -90,46 +100,6 @@ router.post('/', async (req: AuthenticatedRequest, res: Response) => {
     }
 
     res.status(500).json({ error: "Failed to create user. Please try again." });
-  }
-});
-
-// PUT to update an existing user (Admin only)
-router.put('/:id', authenticateToken, requireAdmin, async (req: AuthenticatedRequest, res: Response) => {
-  const { id } = req.params;
-  const { name, email, password } = req.body;
-
-  try {
-    const updatedData: { name?: string; email?: string; password?: string } = {};
-    if (name) updatedData.name = name;
-    if (email) updatedData.email = email;
-    if (password) {
-      const saltRounds = 14;
-      updatedData.password = await bcrypt.hash(password, saltRounds);
-    }
-
-    const updatedUser = await prisma.user.update({
-      where: { id: parseInt(id) },
-      data: updatedData,
-    });
-
-    res.json(updatedUser);
-  } catch (error) {
-    console.error("Error updating user:", error);
-    res.status(500).json({ error: "Failed to update user." });
-  }
-});
-
-// DELETE a user by ID (Admin only)
-router.delete('/:id', authenticateToken, requireAdmin, async (req: AuthenticatedRequest, res: Response) => {
-  const { id } = req.params;
-  try {
-    await prisma.user.delete({
-      where: { id: parseInt(id) },
-    });
-    res.status(204).send();
-  } catch (error) {
-    console.error("Error deleting user:", error);
-    res.status(500).json({ error: "Failed to delete user." });
   }
 });
 

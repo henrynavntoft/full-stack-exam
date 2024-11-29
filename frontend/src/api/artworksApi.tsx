@@ -1,24 +1,21 @@
-// src/api/artworksApi.ts
 import axiosInstance from './axiosInstance';
-import { Artwork } from '../types';
+import { Artwork, Filters } from '../types'; // Assuming Filters is in types.ts
 
-// Fetch all artworks
-interface Filters {
-  searchQuery?: string;
-  artist?: string;
-  period?: string;
-}
-
-export const fetchArtworks = async (page = 1, filters: Filters = {}) => {
+// Helper function for query parameter generation
+const buildQueryParams = (filters: Filters, page: number): string => {
   const { searchQuery, artist, period } = filters;
 
-  const queryParams = new URLSearchParams({
+  return new URLSearchParams({
     page: page.toString(),
     ...(searchQuery && { search: searchQuery }),
     ...(artist && { artist }),
     ...(period && { period }),
   }).toString();
+};
 
+// Fetch all artworks
+export const fetchArtworks = async (page = 1, filters: Filters = {}) => {
+  const queryParams = buildQueryParams(filters, page);
   const response = await axiosInstance.get(`/api/artworks?${queryParams}`);
 
   // Destructure the enriched response
@@ -26,7 +23,6 @@ export const fetchArtworks = async (page = 1, filters: Filters = {}) => {
 
   return { artworks, totalArtworks };
 };
-
 
 // Fetch a single artwork by ID
 export const fetchArtwork = async (id: number): Promise<Artwork> => {

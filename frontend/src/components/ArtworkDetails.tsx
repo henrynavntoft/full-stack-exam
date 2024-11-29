@@ -18,37 +18,51 @@ function ArtworkDetails() {
   if (isError || !artwork) return <p>Artwork not found.</p>;
 
   return (
-    <div className="max-w-2xl mx-auto p-4 bg-white shadow-md rounded">
+    <div className="max-w-screen-lg mx-auto p-4 m-4 bg-white shadow-md rounded-lg flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-8">
+      {/* Artwork Image Section */}
       {artwork.imageUrl && (
-        <img
-          src={artwork.imageUrl}
-          alt={artwork.title}
-          className="w-full h-64 object-cover rounded-md mb-4"
-        />
-      )}
-      <h1 className="text-3xl font-bold mb-4">{artwork.title}</h1>
-      <p className="text-gray-600 mb-2">{artwork.description}</p>
-      {artwork.artistProductions && (
-        <p className="text-gray-700 mb-2">
-          Artists: {artwork.artistProductions.map((ap) => ap.artist.name).join(', ')}
-        </p>
-      )}
-      {artwork.period && (
-        <p className="text-gray-500 mb-2">
-          Period: {artwork.period.periodName} ({new Date(artwork.period.startDate).getFullYear()} - {new Date(artwork.period.endDate).getFullYear()})
-        </p>
-      )}
-      {artwork.colors && artwork.colors.length > 0 && (
-        <div className="flex space-x-2 mt-4">
-          {artwork.colors.map((color) => (
-            <span
-              key={color.id}
-              className="w-6 h-6 rounded-full"
-              style={{ backgroundColor: color.color }}
-            ></span>
-          ))}
+        <div className="flex-shrink-0 w-full md:w-1/2">
+          <img
+            src={artwork.imageUrl}
+            alt={artwork.title}
+            className="w-full h-auto object-contain rounded-md"
+          />
         </div>
       )}
+
+      {/* Artwork Details Section */}
+      <div className="flex flex-col w-full md:w-1/2">
+        <h1 className="text-3xl font-bold mb-4">{artwork.title}</h1>
+       
+
+        {artwork.artistProductions && (
+          <p className="text-gray-500 mb-2">
+            <strong>Artists:</strong> {artwork.artistProductions.map((ap) => ap.artist.name).join(', ')}
+          </p>
+        )}
+
+        {artwork.period && (
+          <p className="text-gray-500 mb-2">
+            <strong>Period:</strong> {artwork.period.periodName} (
+            {new Date(artwork.period.startDate).getFullYear()} - {new Date(artwork.period.endDate).getFullYear()})
+          </p>
+        )}
+
+        {artwork.colors && artwork.colors.length > 0 && (
+          <div className="">
+            <p className="text-gray-700 mb-2 font-semibold">Colors:</p>
+            <div className="flex space-x-2">
+              {artwork.colors.map((color) => (
+                <span
+                  key={color.id}
+                  className="w-8 h-8 rounded-full border"
+                  style={{ backgroundColor: color.color }}
+                ></span>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

@@ -54,7 +54,7 @@ function ArtworkCard({ artwork, user, onDelete }: ArtworkCardProps) {
           <img
             src={artwork.imageUrl}
             alt={artwork.title}
-            className="w-full h-48 object-cover rounded-md mb-4"
+            className="w-full h-48 object-contain rounded-md mb-4"
           />
         )}
         <h2 className="font-semibold text-xl mb-2">{artwork.title}</h2>
@@ -78,10 +78,10 @@ function ArtworkCard({ artwork, user, onDelete }: ArtworkCardProps) {
         {user && user.role === 'ADMIN' && (
           <button
             onClick={handleDelete}
-            className="text-red-500 text-1xl hover:scale-110 transition-transform align-middle justify-center"
+            className="text-2xl hover:scale-110 transition-transform align-middle justify-center"
             aria-label="Delete this artwork"
           >
-            DELETE
+            🗑️
           </button>
         )}
       </div>

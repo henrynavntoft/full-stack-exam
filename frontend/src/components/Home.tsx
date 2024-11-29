@@ -1,15 +1,23 @@
-import React from 'react';
+import { useState } from 'react';
 import ArtworkList from './ArtworkList';
+import Filters from './Filters';
 
-interface HomeProps {
-  user: { id: number; name: string; email: string; role: string } | null;
-  filters: { searchQuery: string; artist: string; period: string };
+function Home({ user }: { user: { id: number; name: string; email: string; role: string } | null }) {
+  const [filters, setFilters] = useState({ searchQuery: '', artist: '', period: '' });
+
+  const handleFilterChange = (updatedFilters: { searchQuery: string; artist: string; period: string }) => {
+    setFilters(updatedFilters);
+  };
+
+  return (
+    <div>
+      {/* Filters Section */}
+      <Filters onFilterChange={handleFilterChange} />
+
+      {/* Artwork List Section */}
+      <ArtworkList user={user} filters={filters} />
+    </div>
+  );
 }
-
-const Home: React.FC<HomeProps> = ({ user, filters }) => (
-  <>
-    <ArtworkList user={user} filters={filters} />
-  </>
-);
 
 export default Home;

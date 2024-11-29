@@ -11,7 +11,6 @@ import { fetchUserDetails, logoutUser } from './api/authApi';
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState<{ id: number; name: string; email: string; role: string } | null>(null);
-  const [filters] = useState({ searchQuery: '', artist: '', period: '' }); 
   const [loading, setLoading] = useState(true); // Track loading state
 
 
@@ -63,7 +62,7 @@ useEffect(() => {
       <Routes>
         <Route 
           path="/" 
-          element={<Home user={user} filters={filters} />} 
+          element={<Home user={user} />} 
         />
         <Route path="/login" element={<LoginForm onLogin={handleLogin} />} />
         <Route path="/signup" element={<CreateUserForm />} />

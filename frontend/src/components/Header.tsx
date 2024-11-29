@@ -21,7 +21,7 @@ function Header({ isAuthenticated, onLogout }: HeaderProps) {
   };
 
   return (
-    <header className="flex justify-between items-center p-4 bg-background text-foreground shadow-md">
+    <header className="flex justify-between items-center p-4 bg-background text-foreground">
       {/* Left: App title */}
       <div className="text-2xl font-bold text-primary">
         <Link to="/">ART PROJECT</Link>

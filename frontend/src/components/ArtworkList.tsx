@@ -63,7 +63,7 @@ function ArtworkList({user, filters = { searchQuery: '', artist: '', period: '' 
       {isLoading && page === 1 && <p>Loading artworks...</p>}
       {isError && <p>Error loading artworks: {(error as Error).message}</p>}
 
-      <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 m-4">
+      <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 m-4">
         {art?.map((artwork) => (
           <ArtworkCard 
           key={artwork.id} 

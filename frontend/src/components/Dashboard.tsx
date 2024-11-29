@@ -1,8 +1,8 @@
 import { useNavigate } from 'react-router-dom';
 import UserList from './UserList';
 import ArtworkList from './ArtworkList';
+import Filters from './Filters'; // Import the new Filters component
 import { useState } from 'react';
-
 
 interface DashboardProps {
   onLogout: () => void;
@@ -12,29 +12,22 @@ interface DashboardProps {
 function Dashboard({ onLogout, user }: DashboardProps) {
   const navigate = useNavigate();
 
-  const [searchQuery, setSearchQuery] = useState('');
-  const [period, setPeriod] = useState('');
-  const [artist, setArtist] = useState('');
+  const [filters, setFilters] = useState({ searchQuery: '', artist: '', period: '' });
 
   const handleLogout = () => {
     onLogout();
     navigate('/login');
   };
 
-  const resetFilters = () => {
-    setSearchQuery('');
-    setPeriod('');
-    setArtist('');
+  const handleFilterChange = (updatedFilters: { searchQuery: string; artist: string; period: string }) => {
+    setFilters(updatedFilters); // Update the filters state
   };
 
-
   return (
-    console.log(user),  
-    
-    <div className="flex items-center justify-center min-h-screen bg-background">
-      <div className="p-6 max-w-4xl w-full bg-card shadow-md rounded-lg">
+    <div className="flex items-center justify-center p-4 bg-background">
+      <div className="p-6 w-full bg-card shadow-md rounded-lg">
+        {/* Header Section */}
         <section className="p-4 mb-6 border-b border-border">
-          {/* Display user role in the dashboard title */}
           <h1 className="text-3xl font-bold text-primary mb-2">
             {user?.role === 'ADMIN' ? 'Admin' : 'User'} Dashboard
           </h1>
@@ -45,73 +38,23 @@ function Dashboard({ onLogout, user }: DashboardProps) {
           >
             Logout
           </button>
-        
         </section>
 
-        <section>
-          <div className="flex justify-between mb-4">
-            <h2 className="text-2xl font-bold text-primary">Filters</h2>
-            <button onClick={resetFilters} className="text-primary hover:text-primary-dark">
-              Reset Filters
-            </button>
-          </div>
-          <div className="flex flex-wrap -mx-4">
-
-          <div className="w-full md:w-1/2 xl:w-1/3 px-4 mb-4">
-          <label className="block mb-2 text-sm text-muted-foreground">Search</label>
-
-          <input 
-          className="block w-full px-4 py-2 text-sm text-muted-foreground bg-white border border-border rounded-lg focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary" 
-          type="text" 
-          name="search" 
-          placeholder="Title, period.."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}          
-          />
-          </div>
-
-            <div className="w-full md:w-1/2 xl:w-1/3 px-4 mb-4">
-            <label className="block mb-2 text-sm text-muted-foreground">Period</label>
-            <select 
-            className="block w-full px-4 py-2 text-sm text-muted-foreground bg-white border border-border rounded-lg focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary" name="period"
-            value={period}
-            onChange={(e) => setPeriod(e.target.value)}
-            >
-              <option value="">All</option>
-              <option value="15">1600's</option>
-              <option value="16">1700's</option>
-              <option value="17">1800's</option>
-              </select>
-            </div>
-              <div className="w-full md:w-1/2 xl:w-1/3 px-4 mb-4">
-              <label className="block mb-2 text-sm text-muted-foreground">Artists</label>
-              <select 
-              className="block w-full px-4 py-2 text-sm text-muted-foreground bg-white border border-border rounded-lg focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary" name="artists"
-              value={artist}
-              onChange={(e) => setArtist(e.target.value)}
-              >
-                <option value="">All</option>
-                <option value="parmigianino">Parmigianino</option>
-                <option value="carpi">Carpi</option>
-                <option value="saenredam">Saenredam</option>
-                <option value="stimmer">Stimmer</option>
-                <option value="rihel">Rihel</option>
-                <option value="trento">Trento</option>
-              </select>
-              </div>
-          </div>
+        {/* Filters Section */}
+        <section className="mb-6">
+          <Filters onFilterChange={handleFilterChange} /> {/* Use the reusable Filters component */}
         </section>
-        
-        {/* Display artworks */}
-        <section>
+
+        {/* Artworks Section */}
+        <section className="mb-6">
           <h2 className="text-2xl font-bold text-primary mb-2">Artworks</h2>
-          <ArtworkList user={user} filters={{ searchQuery, artist, period }}
- />
+          <ArtworkList user={user} filters={filters} />
         </section>
 
-        {/* Only render UserList if the user has an ADMIN role */}
+        {/* User Management Section */}
         {user?.role === 'ADMIN' && (
           <section className="p-4">
+            <h2 className="text-2xl font-bold text-primary mb-2">User Management</h2>
             <UserList isAdmin={user.role === 'ADMIN'} loggedInUserId={user.id} />
           </section>
         )}

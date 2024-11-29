@@ -1,21 +1,19 @@
+// Shared User type
 export interface User {
   id: number;
   name: string;
   email: string;
-  role: "ADMIN" | "USER"; // Matches the UserRole enum in your schema
+  role: 'ADMIN' | 'USER';
   createdAt: string; // ISO date string
 }
 
+// Shared Artwork type
 export interface Artwork {
   id: number;
   title: string;
   description?: string;
   createdAt: string; // ISO date string
-
-  // The image URL from the API (e.g., thumbnail URL)
   imageUrl?: string;
-
-  // Relation to the artist(s) who created the artwork
   artistProductions: {
     artist: {
       id: number;
@@ -26,22 +24,45 @@ export interface Artwork {
       nationality?: string;
       gender?: string;
     };
-    creatorRole?: string; // Role of the artist in the creation, if applicable
+    creatorRole?: string;
   }[];
-
-  // Color data associated with the artwork
-  colors: {
-    id: number;
-    color: string; // Hex color code
-  }[];
-
-  // Production period (if applicable)
+  colors: { id: number; color: string }[];
   period?: {
     id: number;
-    startDate: string; // ISO date string
-    endDate: string; // ISO date string
+    startDate: string;
+    endDate: string;
     periodName?: string;
   };
+  likedByUser: boolean;
+}
 
-   likedByUser?: boolean;
+// Filters for fetching artworks
+export interface Filters {
+  searchQuery?: string;
+  artist?: string;
+  period?: string;
+}
+
+// Payload for creating a new user
+export interface CreateUserPayload {
+  name: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+}
+
+// Response from authentication endpoints
+export interface AuthResponse {
+  user: User;
+}
+
+// Example response for liking/unliking artworks
+export interface ArtworkActionResponse {
+  success: boolean;
+}
+
+// Payload for logging in a user
+export interface LoginPayload {
+  email: string;
+  password: string;
 }
