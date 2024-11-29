@@ -78,19 +78,22 @@ router.post('/login', async (req: Request, res: Response) => {
   }
 });
 
-// delete the json web token when the user logs out
+// Logout
 router.post('/logout', (req: Request, res: Response) => {
   try {
-  res.clearCookie('token');
-  res.status(200).json({ message: 'Logged out successfully' });
-  }
-  catch (error) {
-    console.error('Error:', error);
+    res.clearCookie('token', {
+      httpOnly: true,      // Matches the cookie attributes
+      secure: process.env.NODE_ENV === 'production', // Matches the `secure` attribute
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax', // Allow cross-origin in production
+    });
+    res.status(200).json({ message: 'Logged out successfully' });
+  } catch (error) {
+    console.error('Error during logout:', error);
     res.status(500).json({ error: 'Logout failed. Please try again.' });
   }
 });
 
-
+// Get user details
 router.get('/me', authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
   if (!req.user) {
     // Respond as guest for unauthenticated users

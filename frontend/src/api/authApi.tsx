@@ -9,6 +9,7 @@ interface AuthResponse {
   user: { id: number; name: string; email: string; role: string };
 }
 
+// Login user
 export const loginUser = async (loginData: LoginPayload): Promise<AuthResponse> => {
   const response = await axiosInstance.post<AuthResponse>('/api/auth/login', loginData, {
     withCredentials: true,
@@ -16,6 +17,7 @@ export const loginUser = async (loginData: LoginPayload): Promise<AuthResponse> 
   return response.data;
 };
 
+// Fetch user details
 export const fetchUserDetails = async (): Promise<AuthResponse | null> => {
   try {
     const response = await axiosInstance.get<AuthResponse>('/api/auth/me', {
@@ -33,6 +35,12 @@ export const fetchUserDetails = async (): Promise<AuthResponse | null> => {
   }
 };
 
+// Logout user
 export const logoutUser = async () => {
-  await axiosInstance.post('/api/auth/logout', {}, { withCredentials: true });
+  try {
+    await axiosInstance.post('/api/auth/logout', {}, { withCredentials: true });
+  } catch (error) {
+    console.error('Error logging out:', error);
+    throw error; // Rethrow error to allow frontend to handle it
+  }
 };
