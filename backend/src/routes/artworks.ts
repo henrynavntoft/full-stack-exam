@@ -19,12 +19,13 @@ const router = Router();
 //});
 
 // GET a batch of artworks, filtered if provided
-router.get('/', async (req: Request, res: Response) => {
+router.get('/', authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
   const { page = 1, search, artist, period } = req.query;
   const pageSize = 5;
 
   try {
-   
+    const userId = req.user?.userId; // Get logged-in user's ID from token
+
     const where: Prisma.ArtworkWhereInput = {
       ...(search && {
         title: {
@@ -47,16 +48,13 @@ router.get('/', async (req: Request, res: Response) => {
       ...(period && {
         period: {
           periodName: {
-            startsWith: period as string, 
+            startsWith: period as string,
             mode: Prisma.QueryMode.insensitive,
           },
         },
       }),
     };
 
-    console.log('Generated where clause:', JSON.stringify(where, null, 2));
-
-    
     const totalArtworks = await prisma.artwork.count({ where });
 
     const artworks = await prisma.artwork.findMany({
@@ -67,11 +65,20 @@ router.get('/', async (req: Request, res: Response) => {
         artistProductions: {
           include: { artist: true },
         },
-        period: true, 
+        period: true,
+        favoriteBy: {
+          where: { id: userId }, // Check if the logged-in user has liked this artwork
+        },
       },
     });
 
-    res.json([artworks, totalArtworks]);
+    // Add the likedByUser flag for each artwork
+    const enrichedArtworks = artworks.map((artwork) => ({
+      ...artwork,
+      likedByUser: artwork.favoriteBy.length > 0, // True if the user has liked the artwork
+    }));
+
+    res.json({ artworks: enrichedArtworks, totalArtworks });
   } catch (error) {
     console.error('Error fetching artworks:', error);
     res.status(500).json({ error: 'Failed to fetch artworks.' });
@@ -108,12 +115,12 @@ router.get('/:id', async (req: Request, res: Response) => {
 
 
 // POST: Like an artwork
-router.post('/:id/like', async (req: Request, res: Response) => {
-  const { id } = req.params; 
-  const { userId } = req.body; 
+router.post('/:id/like', authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
+  const { id } = req.params;
+  const userId = req.user?.userId; // Extract userId from the token
 
   if (!userId) {
-    return res.status(400).json({ error: 'User ID is required.' });
+    return res.status(401).json({ error: 'Unauthorized' });
   }
 
   try {
@@ -121,7 +128,7 @@ router.post('/:id/like', async (req: Request, res: Response) => {
       where: { id: userId },
       data: {
         favoriteArtworks: {
-          connect: { id: Number(id) }, 
+          connect: { id: Number(id) },
         },
       },
     });
@@ -134,12 +141,12 @@ router.post('/:id/like', async (req: Request, res: Response) => {
 });
 
 // DELETE: Unlike an artwork
-router.delete('/:id/like', async (req: Request, res: Response) => {
-  const { id } = req.params; 
-  const { userId } = req.body; 
+router.delete('/:id/like', authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
+  const { id } = req.params;
+  const userId = req.user?.userId; // Extract userId from the token
 
   if (!userId) {
-    return res.status(400).json({ error: 'User ID is required.' });
+    return res.status(401).json({ error: 'Unauthorized' });
   }
 
   try {

@@ -42,4 +42,6 @@ export interface Artwork {
     endDate: string; // ISO date string
     periodName?: string;
   };
+
+   likedByUser?: boolean;
 }

@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Artwork } from '../types';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { likeArtwork, deleteLikeArtwork, deleteArtwork } from '../api/artworksApi';
 
 interface ArtworkCardProps {
@@ -11,7 +11,14 @@ interface ArtworkCardProps {
 
 function ArtworkCard({ artwork, user, onDelete }: ArtworkCardProps) {
   const [isLiked, setIsLiked] = useState(false);
-  const [isLiking, setIsLiking] = useState(false); // Track loading state for likes
+  const [isLiking, setIsLiking] = useState(false);
+
+  // Set the initial liked state based on artwork data
+  useEffect(() => {
+    if (user && artwork.likedByUser) {
+      setIsLiked(true);
+    }
+  }, [user, artwork.likedByUser]);
 
   const handleLike = async () => {
     if (!user || isLiking) return;
@@ -23,7 +30,7 @@ function ArtworkCard({ artwork, user, onDelete }: ArtworkCardProps) {
       } else {
         await deleteLikeArtwork(artwork.id, user.id);
       }
-      setIsLiked((prev) => !prev); // Toggle state after API call
+      setIsLiked((prev) => !prev);
     } catch (error) {
       console.error(`Failed to ${isLiked ? 'unlike' : 'like'} artwork:`, error);
     } finally {
@@ -34,7 +41,7 @@ function ArtworkCard({ artwork, user, onDelete }: ArtworkCardProps) {
   const handleDelete = async () => {
     try {
       await deleteArtwork(artwork.id);
-      onDelete(artwork.id); // Notify parent about deletion
+      onDelete(artwork.id);
     } catch (error) {
       console.error('Failed to delete artwork:', error);
     }

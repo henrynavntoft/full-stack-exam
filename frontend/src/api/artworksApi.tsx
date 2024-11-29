@@ -12,21 +12,21 @@ interface Filters {
 export const fetchArtworks = async (page = 1, filters: Filters = {}) => {
   const { searchQuery, artist, period } = filters;
 
-  
   const queryParams = new URLSearchParams({
     page: page.toString(),
-    ...(searchQuery && { search: searchQuery }), 
-    ...(artist && { artist }), 
-    ...(period && { period }), 
+    ...(searchQuery && { search: searchQuery }),
+    ...(artist && { artist }),
+    ...(period && { period }),
   }).toString();
 
   const response = await axiosInstance.get(`/api/artworks?${queryParams}`);
-  
-  const [artworks, totalArtworks] = response.data;
+
+  // Destructure the enriched response
+  const { artworks, totalArtworks } = response.data;
 
   return { artworks, totalArtworks };
-
 };
+
 
 // Fetch a single artwork by ID
 export const fetchArtwork = async (id: number): Promise<Artwork> => {
