@@ -4,6 +4,8 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 import { authenticateToken, AuthenticatedRequest } from '../middleware/authMiddleware';
+import { generateToken } from '../utils/tokenGenerator';
+import { transporter } from '../utils/emailGenerator';
 
 
 dotenv.config();
@@ -121,27 +123,56 @@ router.get('/me', authenticateToken, async (req: AuthenticatedRequest, res: Resp
   }
 });
 
-// Forgot password
-router.post('/forgotpassword', async (req: Request, res: Response) => {
-    const { email } = req.body;
-  try { 
-    if (!email) {
-      return res.status(400).json({ error: 'Email is required' });
-    }
-    const user = await prisma.user.findUnique({ where: { email } });
+// Forgot Password - Generate Token and Send Email
+router.post('/forgotpassword', async (req, res) => {
+  const { email } = req.body;
+
+  try {
+    // Check if email exists in the database
+    const user = await prisma.user.findUnique({
+      where: { email },
+    });
+
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }
-    // Send email to the user with a reset password link
-    // For now, we'll just log a message
-    console.log('Reset password email sent to:', email);
+
+    // Generate the token
+    const token = generateToken();
+
+    // Set token expiration (e.g., 1 hour)
+    const expiresAt = new Date(Date.now() + 3600000); // 1 hour expiration
+
+    // Store the token in the database (create a PasswordResetToken model or add to User)
+    await prisma.passwordResetToken.create({
+      data: {
+        userId: user.id,
+        token,
+        expiresAt,
+      },
+    });
+
+    // Create a reset password URL with the token
+    const resetUrl = `http://localhost:5173/resetpassword?token=${token}`;
+
+    console.log('Email User:', process.env.EMAIL_USER);
+    console.log('Email Pass:', process.env.EMAIL_PASSWORD);
+    console.log("email sent to: ", email);
+
+    // Send the email
+    await transporter.sendMail({
+      from: process.env.EMAIL_USER,
+      to: email,
+      subject: 'Password Reset',
+      html: `<p>Click <a href="${resetUrl}">here</a> to reset your password. The link will expire in 1 hour.</p>`,
+    });
+
     res.json({ message: 'Reset password email sent' });
   } catch (error) {
-    console.error('Error sending reset password email:', error);
-    res.status(500).json({ error: 'Failed to send reset password email' });
+    console.error(error);
+    res.status(500).json({ error: 'Error sending reset password email' });
   }
 });
-
 
 
 
