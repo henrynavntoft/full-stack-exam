@@ -18,7 +18,7 @@ function ArtworkDetails() {
   if (isError || !artwork) return <p>Artwork not found.</p>;
 
   return (
-    <div className="max-w-screen-lg mx-auto p-4 m-4 bg-white shadow-md rounded-lg flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-8">
+    <div className="max-w-screen-lg mx-auto p-10 bg-white shadow-md rounded-lg flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-8 mt-20">
       {/* Artwork Image Section */}
       {artwork.imageUrl && (
         <div className="flex-shrink-0 w-full md:w-1/2">
@@ -45,6 +45,12 @@ function ArtworkDetails() {
           <p className="text-gray-500 mb-2">
             <strong>Period:</strong> {artwork.period.periodName} (
             {new Date(artwork.period.startDate).getFullYear()} - {new Date(artwork.period.endDate).getFullYear()})
+          </p>
+        )}
+
+        {artwork.description && (
+          <p className="text-gray-500 mb-2">
+            <strong>Description:</strong> {artwork.description}
           </p>
         )}
 
