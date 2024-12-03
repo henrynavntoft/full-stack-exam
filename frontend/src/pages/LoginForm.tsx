@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { loginUser } from '../api/authApi';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import  useAuth  from '../context/useAuth';
+
 
 function LoginForm() {
   const [email, setEmail] = useState('');
@@ -116,6 +117,15 @@ function LoginForm() {
             {mutation.isPending ? 'Logging in...' : 'Login'}
           </button>
         </form>
+        <div className="flex items-center justify-center">
+          <Link
+            to="/ForgotPassword"
+            className="text-blue-800 hover:underline mt-5"
+            aria-label="Go to Forgot Password page"
+          >
+            Forgot password?
+          </Link>
+      </div>
       </div>
     </div>
   );

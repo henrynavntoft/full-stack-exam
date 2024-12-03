@@ -9,6 +9,11 @@ export const loginUser = async (loginData: LoginPayload): Promise<AuthResponse> 
   return response.data;
 };
 
+// forgot password
+export const forgotPassword = async (email: string): Promise<void> => {
+  await axiosInstance.post('/api/auth/forgotpassword', { email }); // Correct payload structure
+};
+
 // Fetch current user details
 export const fetchUserDetails = async (): Promise<AuthResponse | null> => {
   try {

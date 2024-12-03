@@ -121,6 +121,28 @@ router.get('/me', authenticateToken, async (req: AuthenticatedRequest, res: Resp
   }
 });
 
+// Forgot password
+router.post('/forgotpassword', async (req: Request, res: Response) => {
+    const { email } = req.body;
+  try { 
+    if (!email) {
+      return res.status(400).json({ error: 'Email is required' });
+    }
+    const user = await prisma.user.findUnique({ where: { email } });
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    // Send email to the user with a reset password link
+    // For now, we'll just log a message
+    console.log('Reset password email sent to:', email);
+    res.json({ message: 'Reset password email sent' });
+  } catch (error) {
+    console.error('Error sending reset password email:', error);
+    res.status(500).json({ error: 'Failed to send reset password email' });
+  }
+});
+
+
 
 
 export default router;
