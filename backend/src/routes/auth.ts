@@ -140,10 +140,10 @@ router.post('/forgotpassword', async (req, res) => {
     // Generate the token
     const token = generateToken();
 
-    // Set token expiration (e.g., 1 hour)
+    // Set token expiration
     const expiresAt = new Date(Date.now() + 3600000); // 1 hour expiration
 
-    // Store the token in the database (create a PasswordResetToken model or add to User)
+    // Store the token in the database
     await prisma.passwordResetToken.create({
       data: {
         userId: user.id,
@@ -155,9 +155,10 @@ router.post('/forgotpassword', async (req, res) => {
     // Create a reset password URL with the token
     const resetUrl = `http://localhost:5173/resetpassword?token=${token}`;
 
-    console.log('Email User:', process.env.EMAIL_USER);
-    console.log('Email Pass:', process.env.EMAIL_PASSWORD);
-    console.log("email sent to: ", email);
+   // leaving this for you to test it with your own environment variables 
+   // console.log('Email User:', process.env.EMAIL_USER);
+   // console.log('Email Pass:', process.env.EMAIL_PASSWORD);
+   // console.log("email sent to: ", email);
 
     // Send the email
     await transporter.sendMail({
@@ -171,6 +172,54 @@ router.post('/forgotpassword', async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Error sending reset password email' });
+  }
+});
+
+// Reset Password - Validate Token and Update Password
+router.post('/resetpassword', async (req, res) => {
+  try {
+      const { token, password, confirmPassword } = req.body;
+
+      // Find the reset token
+      const passwordResetToken = await prisma.passwordResetToken.findUnique({
+          where: { token },
+      });
+
+      if (!passwordResetToken) {
+          return res.status(404).json({ error: 'Invalid or expired token' });
+      }
+
+      // Fetch the user associated with the token
+      const user = await prisma.user.findUnique({
+          where: { id: passwordResetToken.userId },
+      });
+
+      if (!user) {
+          return res.status(404).json({ error: 'User not found' });
+      }
+
+      if (password !== confirmPassword) {
+          return res.status(400).json({ error: 'Passwords do not match' });
+      }
+
+      // Hash and update the password
+      const saltRounds = 14;
+      const hashedPassword = await bcrypt.hash(password, saltRounds);
+
+      await prisma.user.update({
+          where: { id: user.id },
+          data: { password: hashedPassword },
+      });
+
+      // Delete the token
+      await prisma.passwordResetToken.delete({
+          where: { token },
+      });
+
+      res.json({ message: 'Password reset successful' });
+  } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Error resetting password' });
   }
 });
 

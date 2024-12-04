@@ -10,6 +10,7 @@ import LoginForm from './pages/LoginForm';
 import CreateUserForm from './pages/CreateUserForm';
 import ArtworkDetails from './pages/ArtworkDetails';
 import ForgotPassword from './pages/ForgotPassword';
+import ResetPassword from './pages/ResetPassword';
 
 function App() {
 
@@ -23,6 +24,7 @@ function App() {
         <Route path="/login" element={<LoginForm />} />
         <Route path="/signup" element={<CreateUserForm />} />
         <Route path="/forgotpassword" element={<ForgotPassword />} />
+        <Route path="/resetpassword" element={<ResetPassword />} />
         <Route path="/artworks/:id" element={<ArtworkDetails />} />
 
         {/* Protected Routes */}

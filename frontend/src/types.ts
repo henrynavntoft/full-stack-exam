@@ -66,3 +66,10 @@ export interface LoginPayload {
   email: string;
   password: string;
 }
+
+// Payload for resetting password
+export interface ResetPasswordPayload {
+  token: string;
+  password: string;
+  confirmPassword: string;
+}
