@@ -1,5 +1,5 @@
 import axiosInstance from './axiosInstance';
-import { AuthResponse, LoginPayload, resetPasswordPayload } from '../types';
+import { AuthResponse, LoginPayload, ResetPasswordPayload } from '../types';
 
 // Login user
 export const loginUser = async (loginData: LoginPayload): Promise<AuthResponse> => {
@@ -15,7 +15,7 @@ export const forgotPassword = async (email: string): Promise<void> => {
 };
 
 // reset password
-export const resetPassword = async ({ token, password, confirmPassword }: resetPasswordPayload): Promise<void> => {
+export const resetPassword = async ({ token, password, confirmPassword }: ResetPasswordPayload): Promise<void> => {
   await axiosInstance.post('/api/auth/resetpassword', { token, password, confirmPassword });
 };
 
