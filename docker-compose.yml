@@ -9,9 +9,9 @@ services:
       - "3000:3000"
       - "5555:5555"
     environment:
-      - DATABASE_URL=postgresql://frontend_database_for_federico_user:Z8bNJ1OTzpZPk2Dk2mguhM0UkGCN0XkC@dpg-cssc4shu0jms73e92nv0-a.frankfurt-postgres.render.com/frontend_database_for_federico
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/postgres?schema=public
     env_file:
-      - ./backend/.env
+      - ./backend/.env.local
     depends_on:
       - db
     volumes:
@@ -29,7 +29,7 @@ services:
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: postgres
     ports:
-      - "5435:5432"
+      - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
     networks:
@@ -46,7 +46,7 @@ services:
       - "5173:5173" # Expose Vite's default port
     command: sh -c "npm install && npm run dev"
     env_file:
-      - ./frontend/.env
+      - ./frontend/.env.local
     depends_on:
       - backend
     networks:
