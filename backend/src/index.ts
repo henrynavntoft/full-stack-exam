@@ -37,10 +37,9 @@ app.use(helmet());
 app.use(morgan('dev'));
 app.use(cookieParser());
 
-const allowedOrigins = (process.env.CORS_ORIGINS);
-
+const allowedOrigins = process.env.CORS_ORIGINS || '';
 app.use(cors({
-  origin: allowedOrigins,
+  origin: allowedOrigins.split(','),
   credentials: true,
 }));
 

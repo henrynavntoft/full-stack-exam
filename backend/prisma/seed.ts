@@ -26,7 +26,7 @@ interface ArtworkItem {
 
 async function main() {
   // 1. Create an Admin User with a hashed password
-  const hashedPassword = await bcrypt.hash('Securepassword12323!', 10);
+  const hashedPassword = await bcrypt.hash('Federico_10', 10);
   await prisma.user.create({
     data: {
       name: 'Admin User',
@@ -37,7 +37,7 @@ async function main() {
   });
 
   // 2. Fetch Artwork Data from SMK API with SSL bypass
-  const smkApiUrl = 'https://api.smk.dk/api/v1/art/search/?keys=*&filters=[has_image:true]&offset=0&rows=50';
+  const smkApiUrl = 'https://api.smk.dk/api/v1/art/search/?keys=*&filters=[has_image:true]&offset=200&rows=500';
 
   const httpsAgent = new https.Agent({
     rejectUnauthorized: false, // Bypass SSL certificate validation

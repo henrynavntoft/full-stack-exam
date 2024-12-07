@@ -13,9 +13,9 @@ function ResetPassword() {
     password: '',
     confirmPassword: '',
   });
-  const [error, setError] = useState<string>('');
-  const [success, setSuccess] = useState<string>('');
-  const [token, setToken] = useState<string>('');
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
+  const [token, setToken] = useState('');
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
