@@ -13,9 +13,9 @@ function ResetPassword() {
     password: '',
     confirmPassword: '',
   });
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<string | null>(null);
-  const [token, setToken] = useState<string | null>(null);
+  const [error, setError] = useState<string>('');
+  const [success, setSuccess] = useState<string>('');
+  const [token, setToken] = useState<string>('');
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -40,8 +40,8 @@ function ResetPassword() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setError(null);
-    setSuccess(null);
+    setError('');
+    setSuccess('');
 
     if (!formData.password || !formData.confirmPassword) {
         setError("Please fill in all fields.");
