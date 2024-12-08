@@ -19,7 +19,7 @@ function ResetPassword() {
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
-    setToken(urlParams.get('token'));
+    setToken(urlParams.get('token') || '');
   }, []);
 
   const mutation = useMutation({
