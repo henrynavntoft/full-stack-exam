@@ -153,7 +153,7 @@ router.post('/forgotpassword', async (req, res) => {
     });
 
     // Create a reset password URL with the token
-    const resetUrl = `http://localhost:5173/resetpassword?token=${token}`;
+    const resetUrl = `${process.env.CORS_ORIGINS}/resetpassword?token=${token}`;
 
    // leaving this for you to test it with your own environment variables 
    // console.log('Email User:', process.env.EMAIL_USER);
